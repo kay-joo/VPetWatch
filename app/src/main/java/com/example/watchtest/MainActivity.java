@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.example.watchtest.databinding.ActivityMainBinding;
@@ -17,15 +19,23 @@ public class MainActivity extends Activity {
 
     private ActivityMainBinding binding;
     private ImageView digimon0, digimonUpP1, digimonDownP2, digimonDownP3, digimonDownP4, digimonEmotionP4, digimonUpM1, digimonDownM2, digimonDownM3, digimonDownM4, digimonEmotionM4;
+    private ImageView uiBlackStatus, uiBlackFood, uiBlackTraining, uiBlackBattle, uiBlackPoop, uiBlackLight, uiBlackCure, uiBlackCall;
+    private Button button1, button2, button3;
+
+    private int index = 0;//탭별 인덱스 제어 변수
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        initializeImageViews();
+        initializeImageViews();//이미지뷰 초기화
+        initializeButton();//버튼 초기화
+        MySoundPlayer.initSounds(getApplicationContext());//사운드 플레이어 초기화
+        resetUiViewsVisibility();//액티비티 시작과 동시에 검은색 ui 안보이게 설정
     }
 
+    //이미지뷰 초기화 부분
     private void initializeImageViews() {
         digimon0 = findViewById(R.id.digimon_normal_up0);
         digimonUpP1 = findViewById(R.id.digimon_normal_up_p1);
@@ -38,13 +48,63 @@ public class MainActivity extends Activity {
         digimonDownM3 = findViewById(R.id.digimon_normal_down_m3);
         digimonDownM4 = findViewById(R.id.digimon_normal_down_m4);
         digimonEmotionM4 = findViewById(R.id.digimon_normal_emotion_m4);
+
+        uiBlackStatus = findViewById(R.id.UI_black_status);
+        uiBlackFood = findViewById(R.id.UI_black_food);
+        uiBlackTraining = findViewById(R.id.UI_black_training);
+        uiBlackBattle = findViewById(R.id.UI_black_battle);
+        uiBlackPoop = findViewById(R.id.UI_black_poop);
+        uiBlackLight = findViewById(R.id.UI_black_light);
+        uiBlackCure = findViewById(R.id.UI_black_cure);
+        uiBlackCall = findViewById(R.id.UI_black_call);
     }
+
+    //버튼 초기화 부분
+    private void initializeButton() {
+        button1 = findViewById(R.id.button1);
+        button2 = findViewById(R.id.button2);
+        button3 = findViewById(R.id.button3);
+
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MySoundPlayer.play(MySoundPlayer.sound1);
+                //1번 버튼을 누를때 마다 인덱스 상승
+                if (index < 7) {//인덱스가 8이 넘어가면
+                    index++;
+                } else {
+                    index = 0;//0으로 다시 설정
+                }
+                moveTap(index);
+            }
+        });
+
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (index != 0) {
+                    MySoundPlayer.play(MySoundPlayer.sound1);
+                    index = 0;
+                    moveTap(index);
+                }
+            }
+        });
+    }
+
 
     @Override
     protected void onResume() {
         super.onResume();
 
         startDigimonStatusUpdates();
+        moveTap(index);
     }
 
     @Override
@@ -52,6 +112,7 @@ public class MainActivity extends Activity {
         super.onPause();
 
         stopDigimonStatusUpdates();
+        index = 0;
     }
 
     private void startDigimonStatusUpdates() {
@@ -62,6 +123,9 @@ public class MainActivity extends Activity {
         runnable = new Runnable() {
             @Override
             public void run() {
+                index = 0;
+                moveTap(index);
+
                 digimonStatusNormal();
                 handler.postDelayed(this, 19000);
             }
@@ -134,7 +198,7 @@ public class MainActivity extends Activity {
     }
 
     private void animateDigimon(ImageView imageView) {
-        resetImageViewsVisibility();
+        resetDigimonViewsVisibility();
         imageView.setVisibility(View.VISIBLE);
         imageView.setScaleX(1); // 방향 초기화
     }
@@ -146,7 +210,38 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void resetImageViewsVisibility() {
+    private void moveTap(int index) {
+        resetUiViewsVisibility();
+
+        switch (index) {
+            case 1:
+                uiBlackStatus.setVisibility(View.VISIBLE);
+                break;
+            case 2:
+                uiBlackFood.setVisibility(View.VISIBLE);
+                break;
+            case 3:
+                uiBlackTraining.setVisibility(View.VISIBLE);
+                break;
+            case 4:
+                uiBlackBattle.setVisibility(View.VISIBLE);
+                break;
+            case 5:
+                uiBlackPoop.setVisibility(View.VISIBLE);
+                break;
+            case 6:
+                uiBlackLight.setVisibility(View.VISIBLE);
+                break;
+            case 7:
+                uiBlackCure.setVisibility(View.VISIBLE);
+                break;
+            default:
+                resetUiViewsVisibility();
+                break;
+        }
+    }
+
+    private void resetDigimonViewsVisibility() {
         digimon0.setVisibility(View.INVISIBLE);
         digimonUpP1.setVisibility(View.INVISIBLE);
         digimonDownP2.setVisibility(View.INVISIBLE);
@@ -158,5 +253,16 @@ public class MainActivity extends Activity {
         digimonDownM3.setVisibility(View.INVISIBLE);
         digimonDownM4.setVisibility(View.INVISIBLE);
         digimonEmotionM4.setVisibility(View.INVISIBLE);
+    }
+
+    private void resetUiViewsVisibility() {
+        uiBlackStatus.setVisibility(View.INVISIBLE);
+        uiBlackFood.setVisibility(View.INVISIBLE);
+        uiBlackTraining.setVisibility(View.INVISIBLE);
+        uiBlackBattle.setVisibility(View.INVISIBLE);
+        uiBlackPoop.setVisibility(View.INVISIBLE);
+        uiBlackLight.setVisibility(View.INVISIBLE);
+        uiBlackCure.setVisibility(View.INVISIBLE);
+        uiBlackCall.setVisibility(View.INVISIBLE);
     }
 }

@@ -48,42 +48,86 @@
             android:orientation="vertical"
             android:weightSum="4">
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="@dimen/inner_frame_layout_padding"
                 android:weightSum="4">
 
-                <ImageView
-                    android:id="@+id/UI_gray_status"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/ui_gray_status" />
+                    android:orientation="horizontal"
+                    android:padding="@dimen/inner_frame_layout_padding"
+                    android:weightSum="4">
 
-                <ImageView
-                    android:id="@+id/UI_gray_food"
-                    android:layout_width="wrap_content"
+                    <ImageView
+                        android:id="@+id/UI_gray_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_gray_status" />
+
+                    <ImageView
+                        android:id="@+id/UI_gray_food"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_gray_food" />
+
+                    <ImageView
+                        android:id="@+id/UI_gray_training"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_gray_training" />
+
+                    <ImageView
+                        android:id="@+id/UI_gray_battle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_gray_battle" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/ui_gray_food" />
+                    android:orientation="horizontal"
+                    android:padding="@dimen/inner_frame_layout_padding"
+                    android:weightSum="4">
 
-                <ImageView
-                    android:id="@+id/UI_gray_training"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/ui_gray_training" />
+                    <ImageView
+                        android:id="@+id/UI_black_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_black_status" />
 
-                <ImageView
-                    android:id="@+id/UI_gray_battle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/ui_gray_battle" />
+                    <ImageView
+                        android:id="@+id/UI_black_food"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_black_food" />
 
-            </LinearLayout>
+                    <ImageView
+                        android:id="@+id/UI_black_training"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_black_training" />
+
+                    <ImageView
+                        android:id="@+id/UI_black_battle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_black_battle" />
+
+                </LinearLayout>
+            </FrameLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/frameLayout4"
@@ -237,36 +281,89 @@
                 android:layout_height="match_parent"
                 android:gravity="bottom"
                 android:orientation="horizontal"
-                android:padding="@dimen/inner_frame_layout_padding"
                 android:weightSum="4">
 
-                <ImageView
-                    android:id="@+id/UI_gray_poop"
-                    android:layout_width="wrap_content"
+                <FrameLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/ui_gray_poop" />
+                    android:orientation="horizontal"
+                    android:weightSum="4">
 
-                <ImageView
-                    android:id="@+id/UI_gray_light"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/ui_gray_light" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="bottom"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/inner_frame_layout_padding"
+                        android:weightSum="4">
 
-                <ImageView
-                    android:id="@+id/UI_gray_crue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/ui_gray_cure" />
+                        <ImageView
+                            android:id="@+id/UI_gray_poop"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:src="@drawable/ui_gray_poop" />
 
-                <ImageView
-                    android:id="@+id/UI_gray_call"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:src="@drawable/ui_gray_call" />
+                        <ImageView
+                            android:id="@+id/UI_gray_light"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:src="@drawable/ui_gray_light" />
+
+                        <ImageView
+                            android:id="@+id/UI_gray_cure"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:src="@drawable/ui_gray_cure" />
+
+                        <ImageView
+                            android:id="@+id/UI_gray_call"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:src="@drawable/ui_gray_call" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="bottom"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/inner_frame_layout_padding"
+                        android:weightSum="4">
+
+                    <ImageView
+                        android:id="@+id/UI_black_poop"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_black_poop" />
+
+                    <ImageView
+                        android:id="@+id/UI_black_light"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_black_light" />
+
+                    <ImageView
+                        android:id="@+id/UI_black_cure"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_black_cure" />
+
+                    <ImageView
+                        android:id="@+id/UI_black_call"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@drawable/ui_black_call" />
+                    </LinearLayout>
+
+                </FrameLayout>
             </LinearLayout>
         </LinearLayout>
     </FrameLayout>
