@@ -1,6 +1,7 @@
 package com.example.watchtest;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -82,7 +83,10 @@ public class MainActivity extends Activity {
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(index != 0){
+                    MySoundPlayer.play(MySoundPlayer.sound1);
+                    changeActivity(index);
+                }
             }
         });
 
@@ -96,6 +100,30 @@ public class MainActivity extends Activity {
                 }
             }
         });
+    }
+
+    private void changeActivity(int index) {
+        switch (index){
+            case 1:
+                Intent intent = new Intent(MainActivity.this, StatusActivity.class);
+                intent.addFlags (Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                startActivity(intent);
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            case 7:
+                break;
+            default:
+                break;
+        }
     }
 
 
