@@ -103,28 +103,32 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:src="@drawable/ui_black_status" />
+                        android:src="@drawable/ui_black_status"
+                        android:visibility="invisible" />
 
                     <ImageView
                         android:id="@+id/UI_black_food"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:src="@drawable/ui_black_food" />
+                        android:src="@drawable/ui_black_food"
+                        android:visibility="invisible" />
 
                     <ImageView
                         android:id="@+id/UI_black_training"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:src="@drawable/ui_black_training" />
+                        android:src="@drawable/ui_black_training"
+                        android:visibility="invisible" />
 
                     <ImageView
                         android:id="@+id/UI_black_battle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:src="@drawable/ui_black_battle" />
+                        android:src="@drawable/ui_black_battle"
+                        android:visibility="invisible" />
 
                 </LinearLayout>
             </FrameLayout>
@@ -349,28 +353,32 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:src="@drawable/ui_black_poop" />
+                            android:src="@drawable/ui_black_poop"
+                            android:visibility="invisible" />
 
                         <ImageView
                             android:id="@+id/UI_black_light"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:src="@drawable/ui_black_light" />
+                            android:src="@drawable/ui_black_light"
+                            android:visibility="invisible" />
 
                         <ImageView
                             android:id="@+id/UI_black_cure"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:src="@drawable/ui_black_cure" />
+                            android:src="@drawable/ui_black_cure"
+                            android:visibility="invisible" />
 
                         <ImageView
                             android:id="@+id/UI_black_call"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:src="@drawable/ui_black_call" />
+                            android:src="@drawable/ui_black_call"
+                            android:visibility="invisible" />
                     </LinearLayout>
 
                 </FrameLayout>

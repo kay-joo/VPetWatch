@@ -96,7 +96,7 @@ public class StatusActivity extends Activity {
             public void onClick(View view) {
                 MySoundPlayer.play(MySoundPlayer.sound1);
                 //1번 버튼을 누를때 마다 인덱스 상승
-                if (index < 5) {//인덱스가 8이 넘어가면
+                if (index < 5) {//인덱스가 5가 넘어가면
                     index++;
                 } else {
                     index = 0;//0으로 다시 설정
@@ -110,7 +110,7 @@ public class StatusActivity extends Activity {
             public void onClick(View view) {
                 MySoundPlayer.play(MySoundPlayer.sound1);
                 //1번 버튼을 누를때 마다 인덱스 상승
-                if (index < 5) {//인덱스가 8이 넘어가면
+                if (index < 5) {//인덱스가 5가 넘어가면
                     index++;
                 } else {
                     index = 0;//0으로 다시 설정

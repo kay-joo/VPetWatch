@@ -23,6 +23,8 @@ public class MainActivity extends Activity {
     private ImageView uiBlackStatus, uiBlackFood, uiBlackTraining, uiBlackBattle, uiBlackPoop, uiBlackLight, uiBlackCure, uiBlackCall;
     private Button button1, button2, button3;
 
+    private Intent intent;
+
     private int index = 0;//탭별 인덱스 제어 변수
 
     @Override
@@ -76,7 +78,7 @@ public class MainActivity extends Activity {
             public void onClick(View view) {
                 MySoundPlayer.play(MySoundPlayer.sound1);
                 //1번 버튼을 누를때 마다 인덱스 상승
-                if (index < 7) {//인덱스가 8이 넘어가면
+                if (index < 7) {//인덱스가 7이 넘어가면
                     index++;
                 } else {
                     index = 0;//0으로 다시 설정
@@ -110,11 +112,14 @@ public class MainActivity extends Activity {
     private void changeActivity(int index) {
         switch (index){
             case 1:
-                Intent intent = new Intent(MainActivity.this, StatusActivity.class);
+                intent = new Intent(MainActivity.this, StatusActivity.class);
                 intent.addFlags (Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
                 startActivity(intent);
                 break;
             case 2:
+                intent = new Intent(MainActivity.this, FoodActivity.class);
+                intent.addFlags (Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                startActivity(intent);
                 break;
             case 3:
                 break;
