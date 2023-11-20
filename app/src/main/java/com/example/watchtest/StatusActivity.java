@@ -26,6 +26,11 @@ public class StatusActivity extends Activity {
     private int index = 0;//탭별 인덱스 제어 변수
 
     @Override
+    public void onBackPressed() {
+        //뒤로가기 버튼으로 이전 액티비티를 불러오는 기능 잠그기위한 용도
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
