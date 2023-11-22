@@ -23,6 +23,8 @@ public class StatusActivity extends Activity {
 
     private Button button1, button2, button3;
 
+    int sendTapIndex = 1;  // 메인 액티비티로 전달할 값, 다시 메인 화면으로 돌아가도 이전 들어갔던 탭에 불이 들어오게 하기위한 변수
+
     private int index = 0;//탭별 인덱스 제어 변수
 
     @Override
@@ -120,6 +122,7 @@ public class StatusActivity extends Activity {
                 MySoundPlayer.play(MySoundPlayer.sound1);
                 Intent intent = new Intent(StatusActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                intent.putExtra("INT_VALUE_KEY", sendTapIndex);
                 startActivity(intent);
                 finish();//현재 액티비티 종료
             }

@@ -36,6 +36,9 @@ public class MainActivity extends Activity {
         initializeButton();//버튼 초기화
         MySoundPlayer.initSounds(getApplicationContext());//사운드 플레이어 초기화
         resetUiViewsVisibility();//액티비티 시작과 동시에 검은색 ui 안보이게 설정
+
+        Intent intent = getIntent();
+        index = intent.getIntExtra("INT_VALUE_KEY", 0);
     }
 
     //이미지뷰 초기화 부분
