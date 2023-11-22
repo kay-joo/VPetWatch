@@ -1,7 +1,9 @@
 package com.example.watchtest;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -27,6 +29,15 @@ public class MainActivity extends Activity {
 
     private int index = 0;//탭별 인덱스 제어 변수
 
+    //게임 내에서 사용될 변수들
+    private int age, weight, hungry, strength, effort, health, winrate;//상태창에서 사용될 변수들
+    private int mistake, overfeed, sleepdis, scarrate, poop;//게임 내부에서 동작할 변수들
+    private boolean cure;//상처입었는지 판단용 변수
+
+    //SharedPreferences 데이터 저장 관련 선언
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +47,30 @@ public class MainActivity extends Activity {
         initializeButton();//버튼 초기화
         MySoundPlayer.initSounds(getApplicationContext());//사운드 플레이어 초기화
         resetUiViewsVisibility();//액티비티 시작과 동시에 검은색 ui 안보이게 설정
+        initializePreferences();//SharedPreferences 초기화 메소드
 
         Intent intent = getIntent();
-        index = intent.getIntExtra("INT_VALUE_KEY", 0);
+        index = intent.getIntExtra("INT_VALUE_KEY", 0);//특정 탭에서 나왔을때 탭의 커서를 받아오기 위한 인텐트
+    }
+
+    //SharedPreferences 초기화 부분
+    private void initializePreferences() {
+        preferences = getSharedPreferences("VPetWatch", Context.MODE_PRIVATE);
+        editor = preferences.edit();
+
+        age = preferences.getInt("age", 0);
+        weight = preferences.getInt("weight", 5);
+        hungry = preferences.getInt("hungry", 0);
+        strength = preferences.getInt("strength", 0);
+        effort = preferences.getInt("effort", 0);
+        health = preferences.getInt("health", 0);
+        winrate = preferences.getInt("winrate", 0);
+        mistake = preferences.getInt("mistake", 0);
+        overfeed = preferences.getInt("overfeed", 0);
+        sleepdis = preferences.getInt("sleepdis", 0);
+        scarrate = preferences.getInt("scarrate", 0);
+        poop = preferences.getInt("poop", 0);
+        cure = preferences.getBoolean("cure", false);
     }
 
     //이미지뷰 초기화 부분
@@ -88,7 +120,7 @@ public class MainActivity extends Activity {
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(index != 0){
+                if (index != 0) {
                     MySoundPlayer.play(MySoundPlayer.sound1);
                     changeActivity(index);
                 }
@@ -108,16 +140,16 @@ public class MainActivity extends Activity {
     }
 
     private void changeActivity(int index) {
-        switch (index){
+        switch (index) {
             case 1:
                 intent = new Intent(MainActivity.this, StatusActivity.class);
-                intent.addFlags (Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
                 startActivity(intent);
                 finish();//현재 액티비티 종료
                 break;
             case 2:
                 intent = new Intent(MainActivity.this, FoodActivity.class);
-                intent.addFlags (Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
                 startActivity(intent);
                 finish();//현재 액티비티 종료
                 break;

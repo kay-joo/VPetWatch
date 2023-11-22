@@ -183,7 +183,7 @@
                     app:layout_constraintVertical_bias="0.1" />
 
                 <ImageView
-                    android:id="@+id/status_hungry_heart_one_empty"
+                    android:id="@+id/status_hungry_heart_one"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"
@@ -196,7 +196,7 @@
                     app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
-                    android:id="@+id/status_hungry_heart_two_empty"
+                    android:id="@+id/status_hungry_heart_two"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"
@@ -209,7 +209,7 @@
                     app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
-                    android:id="@+id/status_hungry_heart_three_empty"
+                    android:id="@+id/status_hungry_heart_three"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"
@@ -222,7 +222,7 @@
                     app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
-                    android:id="@+id/status_hungry_heart_four_empty"
+                    android:id="@+id/status_hungry_heart_four"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"
@@ -248,7 +248,7 @@
                     app:layout_constraintVertical_bias="0.1" />
 
                 <ImageView
-                    android:id="@+id/status_strength_heart_one_empty"
+                    android:id="@+id/status_strength_heart_one"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"
@@ -261,7 +261,7 @@
                     app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
-                    android:id="@+id/status_strength_heart_two_empty"
+                    android:id="@+id/status_strength_heart_two"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"
@@ -274,7 +274,7 @@
                     app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
-                    android:id="@+id/status_strength_heart_three_empty"
+                    android:id="@+id/status_strength_heart_three"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"
@@ -287,7 +287,7 @@
                     app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
-                    android:id="@+id/status_strength_heart_four_empty"
+                    android:id="@+id/status_strength_heart_four"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"
@@ -313,7 +313,7 @@
                     app:layout_constraintVertical_bias="0.1" />
 
                 <ImageView
-                    android:id="@+id/status_effort_heart_one_empty"
+                    android:id="@+id/status_effort_heart_one"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"
@@ -326,7 +326,7 @@
                     app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
-                    android:id="@+id/status_effort_heart_two_empty"
+                    android:id="@+id/status_effort_heart_two"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"
@@ -339,7 +339,7 @@
                     app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
-                    android:id="@+id/status_effort_heart_three_empty"
+                    android:id="@+id/status_effort_heart_three"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"
@@ -352,7 +352,7 @@
                     app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
-                    android:id="@+id/status_effort_heart_four_empty"
+                    android:id="@+id/status_effort_heart_four"
                     android:layout_width="37dp"
                     android:layout_height="37dp"
                     android:src="@drawable/status_heart_empty"

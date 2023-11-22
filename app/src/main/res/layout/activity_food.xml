@@ -103,7 +103,7 @@
                     android:layout_width="110dp"
                     android:layout_height="65dp"
                     android:src="@drawable/food_meat_protein"
-                    android:visibility="gone"
+
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
@@ -116,7 +116,7 @@
                     android:layout_width="40dp"
                     android:layout_height="30dp"
                     android:src="@drawable/ui_arrow"
-                    android:visibility="gone"
+
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.02"
@@ -154,8 +154,8 @@
                     android:id="@+id/digimon_food_open"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
                     android:src="@drawable/digimon_food_open"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -166,8 +166,8 @@
                     android:id="@+id/digimon_food_close"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
                     android:src="@drawable/digimon_food_close"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -243,6 +243,7 @@
                     android:layout_width="40dp"
                     android:layout_height="30dp"
                     android:src="@drawable/food_protein_one"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.02"
@@ -255,6 +256,7 @@
                     android:layout_width="40dp"
                     android:layout_height="30dp"
                     android:src="@drawable/food_protein_one"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.02"
@@ -267,6 +269,7 @@
                     android:layout_width="40dp"
                     android:layout_height="30dp"
                     android:src="@drawable/food_protein_two"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.02"
@@ -279,14 +282,13 @@
                     android:layout_width="40dp"
                     android:layout_height="30dp"
                     android:src="@drawable/food_protein_three"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.02"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.72" />
-
-
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

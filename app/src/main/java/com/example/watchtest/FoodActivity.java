@@ -1,7 +1,9 @@
 package com.example.watchtest;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,6 +30,17 @@ public class FoodActivity extends Activity {
 
     private int index = 0;//탭별 인덱스 제어 변수
 
+    //게임 내에서 사용될 변수들
+    private int age, weight, hungry, strength, effort, health, winrate;//상태창에서 사용될 변수들
+    private int mistake, overfeed, sleepdis, scarrate, poop;//게임 내부에서 동작할 변수들
+    private boolean cure;//상처입었는지 판단용 변수
+
+    private int tmpHealth;//프로틴 4개 먹일 때마다 체력 1을 상승시키기 위한 임시 변수
+
+    //SharedPreferences 데이터 저장 관련 선언
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +50,30 @@ public class FoodActivity extends Activity {
 
         initializeImageViews();
         initializeButton();
+        initializePreferences();//SharedPreferences 초기화 메소드
         arrowChange(index);
+    }
+
+    //SharedPreferences 초기화 부분
+    private void initializePreferences() {
+        preferences = getSharedPreferences("VPetWatch", Context.MODE_PRIVATE);
+        editor = preferences.edit();
+
+        age = preferences.getInt("age", 0);
+        weight = preferences.getInt("weight", 5);
+        hungry = preferences.getInt("hungry", 0);
+        strength = preferences.getInt("strength", 0);
+        effort = preferences.getInt("effort", 0);
+        health = preferences.getInt("health", 0);
+        winrate = preferences.getInt("winrate", 0);
+        mistake = preferences.getInt("mistake", 0);
+        overfeed = preferences.getInt("overfeed", 0);
+        sleepdis = preferences.getInt("sleepdis", 0);
+        scarrate = preferences.getInt("scarrate", 0);
+        poop = preferences.getInt("poop", 0);
+        cure = preferences.getBoolean("cure", false);
+
+        tmpHealth = preferences.getInt("tmpHealth", 0);
     }
 
     private void initializeImageViews() {
@@ -131,6 +167,15 @@ public class FoodActivity extends Activity {
 
     private void pageOne() {
         resetFoodViewsVisibility();
+        if (hungry < 4) {
+            hungry++;
+        }
+        if (weight < 99) {
+            weight++;
+        }
+        editor.putInt("hungry", hungry);//hungry 값 증가
+        editor.putInt("weight", weight);//weight 값 증가
+        editor.apply();
         handler.removeCallbacksAndMessages(null);
         isHandlerRunning = true;//핸들러의 동작 시작을 세팅
         digimonStatusEatMeat();
@@ -138,6 +183,27 @@ public class FoodActivity extends Activity {
 
     private void pageTwo() {
         resetFoodViewsVisibility();
+        if (strength < 4) {
+            strength++;
+        }
+        if (weight < 99) {
+            weight += 2;
+            if (weight > 99) {
+                weight = 99;
+            }
+        }
+        if (tmpHealth < 4) {
+            tmpHealth++;
+        }
+        if (tmpHealth == 4 && health < 16) {
+            health++;
+            tmpHealth = 0;
+        }
+        editor.putInt("strength", strength);//strength 값 증가
+        editor.putInt("weight", weight);//weight 값 증가
+        editor.putInt("tmpHealth", tmpHealth);//tmpHealth 값 증가
+        editor.putInt("health", health);//health 값 증가
+        editor.apply();
         handler.removeCallbacksAndMessages(null);
         isHandlerRunning = true;//핸들러의 동작 시작을 세팅
         digimonStatusEatProtein();
