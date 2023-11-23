@@ -1,25 +1,30 @@
 package com.example.watchtest;
 
-import android.app.Service;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 
-//백그라운드에서 경과시간을 체크하여 배고픔과 근력을 줄어들게 만들 클래스
-public class TimerService extends Service {
+import androidx.core.app.NotificationCompat;
 
-    //게임 내에서 사용될 변수들
-    private int age, weight, hungry, strength, effort, health, winrate;//상태창에서 사용될 변수들
-    private int mistake, overfeed, sleepdis, scarrate, poop;//게임 내부에서 동작할 변수들
-    private boolean cure;//상처입었는지 판단용 변수
+// Foreground Service로 변환된 TimerService 클래스
+public class TimerService extends android.app.Service {
 
-    //SharedPreferences 데이터 저장 관련 선언
+    private static final String CHANNEL_ID = "timer_channel";
+
+    private int age, weight, hungry, strength, effort, health, winrate;
+    private int mistake, overfeed, sleepdis, scarrate, poop;
+    private boolean cure;
+
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
 
@@ -46,28 +51,28 @@ public class TimerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // Foreground Service로 시작
+        startForeground(1, createNotification());
+
         // 서비스 시작 시간 기록
         startTime = SystemClock.elapsedRealtime();
         Log.d("TimerService", "Service start");
 
-        // 경과 시간을 주기적으로 로그에 출력
+        // 경과 시간을 주기적으로 처리
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 long elapsedTime = SystemClock.elapsedRealtime() - startTime;
-                //Log.d("TimerService", "Elapsed time: " + elapsedTime + " milliseconds");
-                //특정 시간마다 실행될 코드블럭
                 initializePreferences();
                 if (hungry > 0) {
                     hungry--;
-                    editor.putInt("hungry", hungry);//hungry 값 감소
+                    editor.putInt("hungry", hungry);
                 } else {
                     NotificationHelper.showNotification(getApplicationContext(), "VPetWatch", "Hungry decreased");
-
                 }
                 if (strength > 0) {
                     strength--;
-                    editor.putInt("strength", strength);//strength 값 감소
+                    editor.putInt("strength", strength);
                 } else {
                     NotificationHelper.showNotification(getApplicationContext(), "VPetWatch", "Strength decreased");
                 }
@@ -86,7 +91,7 @@ public class TimerService extends Service {
         handler.removeCallbacksAndMessages(null);
     }
 
-    //SharedPreferences 초기화 부분
+    // SharedPreferences 초기화 부분
     private void initializePreferences() {
         preferences = getSharedPreferences("VPetWatch", Context.MODE_PRIVATE);
         editor = preferences.edit();
@@ -104,5 +109,20 @@ public class TimerService extends Service {
         scarrate = preferences.getInt("scarrate", 0);
         poop = preferences.getInt("poop", 0);
         cure = preferences.getBoolean("cure", false);
+    }
+
+    // Foreground 알림 생성
+    private Notification createNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Timer Channel", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
+        return new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("VPetWatch")
+                .setContentText("VPetWatch is running in the foreground.")
+                .setSmallIcon(R.drawable.digimon_normal_up)
+                .build();
     }
 }
