@@ -51,6 +51,12 @@ public class MainActivity extends Activity {
 
         Intent intent = getIntent();
         index = intent.getIntExtra("INT_VALUE_KEY", 0);//특정 탭에서 나왔을때 탭의 커서를 받아오기 위한 인텐트
+
+        if (!ServiceUtils.isServiceRunning(this, TimerService.class)) {
+            Log.d("MainActivity", "startService");
+            Intent serviceIntent = new Intent(this, TimerService.class);
+            startService(serviceIntent);
+        }
     }
 
     //SharedPreferences 초기화 부분
