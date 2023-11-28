@@ -67,12 +67,18 @@ public class TimerService extends android.app.Service {
                 if (hungry > 0) {
                     hungry--;
                     editor.putInt("hungry", hungry);
+                    if (hungry == 0) {
+                        NotificationHelper.showNotification(getApplicationContext(), "VPetWatch", "Hungry decreased");
+                    }
                 } else {
                     NotificationHelper.showNotification(getApplicationContext(), "VPetWatch", "Hungry decreased");
                 }
                 if (strength > 0) {
                     strength--;
                     editor.putInt("strength", strength);
+                    if (strength == 0) {
+                        NotificationHelper.showNotification(getApplicationContext(), "VPetWatch", "Strength decreased");
+                    }
                 } else {
                     NotificationHelper.showNotification(getApplicationContext(), "VPetWatch", "Strength decreased");
                 }

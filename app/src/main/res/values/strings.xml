@@ -8,4 +8,5 @@
     <string name="hello_world">Hello Square World!</string>
     <string name="title_activity_status">StatusActivity</string>
     <string name="title_activity_food">FoodActivity</string>
+    <string name="title_activity_training">TrainingActivity</string>
 </resources>
