@@ -161,7 +161,7 @@ public class TrainingActivity extends Activity {
                     MySoundPlayer.stop();
                     handler.removeCallbacksAndMessages(null);
                     runnable = null;
-                    resultStart(tCnt);
+                    handler.postDelayed(() -> resultStart(tCnt), 300);
                 }
             }
         });
@@ -181,7 +181,7 @@ public class TrainingActivity extends Activity {
                     MySoundPlayer.stop();
                     handler.removeCallbacksAndMessages(null);
                     runnable = null;
-                    resultStart(tCnt);
+                    handler.postDelayed(() -> resultStart(tCnt), 300);
                 }
             }
         });
@@ -191,6 +191,7 @@ public class TrainingActivity extends Activity {
             public void onClick(View view) {
                 handler.removeCallbacksAndMessages(null);
                 runnable = null;
+                MySoundPlayer.stop();
 
                 MySoundPlayer.play(MySoundPlayer.sound1);
                 Intent intent = new Intent(TrainingActivity.this, MainActivity.class);

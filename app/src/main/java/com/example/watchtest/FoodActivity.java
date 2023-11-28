@@ -141,8 +141,6 @@ public class FoodActivity extends Activity {
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                handler.removeCallbacksAndMessages(null);
-
                 MySoundPlayer.play(MySoundPlayer.sound1);
                 Intent intent = new Intent(FoodActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
