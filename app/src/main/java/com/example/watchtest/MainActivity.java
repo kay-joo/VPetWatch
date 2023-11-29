@@ -1,21 +1,29 @@
 package com.example.watchtest;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import androidx.core.app.NotificationManagerCompat;
 
 import com.example.watchtest.databinding.ActivityMainBinding;
 
 public class MainActivity extends Activity {
+    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 1001;
 
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable runnable;
@@ -52,10 +60,61 @@ public class MainActivity extends Activity {
         Intent intent = getIntent();
         index = intent.getIntExtra("INT_VALUE_KEY", 0);//특정 탭에서 나왔을때 탭의 커서를 받아오기 위한 인텐트
 
+        checkNotificationPermission();//알림 허용체크
+
         if (!ServiceUtils.isServiceRunning(this, TimerService.class)) {
             Log.d("MainActivity", "startService");
             Intent serviceIntent = new Intent(this, TimerService.class);
             startService(serviceIntent);
+        }
+    }
+
+    private void checkNotificationPermission() {
+        if (!isNotificationPermissionGranted()) {
+            requestNotificationPermission();
+        } else {
+            // 알림 권한이 이미 허용된 경우 실행할 코드
+        }
+    }
+
+    private boolean isNotificationPermissionGranted() {
+        return NotificationManagerCompat.from(this).areNotificationsEnabled();
+    }
+
+    private void requestNotificationPermission() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("알림 권한 필요");
+        builder.setMessage("알림 권한이 필요합니다. 설정으로 이동하여 권한을 허용해주세요.");
+        builder.setPositiveButton("설정으로 이동", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                openAppSettings();
+            }
+        });
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // 권한이 거부된 경우 실행할 코드
+                Toast.makeText(MainActivity.this, "알림 권한이 필요합니다. 앱을 종료합니다.", Toast.LENGTH_SHORT).show();
+                finish(); // 앱 종료
+            }
+        });
+        builder.show();
+    }
+
+    private void openAppSettings() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivityForResult(intent, NOTIFICATION_PERMISSION_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            // 설정에서 돌아온 경우 알림 권한을 다시 확인
+            checkNotificationPermission();
         }
     }
 
