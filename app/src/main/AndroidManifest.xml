@@ -31,6 +31,7 @@
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
 
+
         <!-- 알림 채널 설정 (Oreo 이상) -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
@@ -54,17 +55,19 @@
         <activity
             android:name=".StatusActivity"
             android:exported="true"
-            android:label="@string/title_activity_status">
-        </activity>
+            android:label="@string/title_activity_status"></activity>
         <activity
             android:name=".FoodActivity"
             android:exported="true"
-            android:label="@string/title_activity_food">
-        </activity>
+            android:label="@string/title_activity_food"></activity>
         <activity
             android:name=".TrainingActivity"
             android:exported="true"
-            android:label="@string/title_activity_training">
+            android:label="@string/title_activity_training"></activity>
+        <activity
+            android:name=".BattleActivity"
+            android:exported="true"
+            android:label="@string/title_activity_battle">
         </activity>
     </application>
 

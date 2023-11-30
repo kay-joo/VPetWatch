@@ -225,6 +225,10 @@ public class MainActivity extends Activity {
                 finish();//현재 액티비티 종료
                 break;
             case 4:
+                intent = new Intent(MainActivity.this, BattleActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                startActivity(intent);
+                finish();//현재 액티비티 종료
                 break;
             case 5:
                 break;

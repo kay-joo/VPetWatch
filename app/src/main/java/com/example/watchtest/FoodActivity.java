@@ -112,7 +112,7 @@ public class FoodActivity extends Activity {
                 } else {
                     MySoundPlayer.play(MySoundPlayer.sound1);
                     //1번 버튼을 누를때 마다 인덱스 상승
-                    if (index < 1) {//인덱스가 5가 넘어가면
+                    if (index < 1) {//인덱스가 1을 넘어가면
                         index++;
                     } else {
                         index = 0;//0으로 다시 설정

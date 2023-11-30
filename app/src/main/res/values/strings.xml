@@ -9,4 +9,5 @@
     <string name="title_activity_status">StatusActivity</string>
     <string name="title_activity_food">FoodActivity</string>
     <string name="title_activity_training">TrainingActivity</string>
+    <string name="title_activity_battle">BattleActivity</string>
 </resources>
