@@ -203,10 +203,15 @@ public class FoodActivity extends Activity {
             health++;
             tmpHealth = 0;
         }
+        if (scarrate < 30) {
+            scarrate++;
+        }
+
         editor.putInt("strength", strength);//strength 값 증가
         editor.putInt("weight", weight);//weight 값 증가
         editor.putInt("tmpHealth", tmpHealth);//tmpHealth 값 증가
         editor.putInt("health", health);//health 값 증가
+        editor.putInt("scarrate", scarrate);//health 값 증가
         editor.apply();
         handler.removeCallbacksAndMessages(null);
         isHandlerRunning = true;//핸들러의 동작 시작을 세팅

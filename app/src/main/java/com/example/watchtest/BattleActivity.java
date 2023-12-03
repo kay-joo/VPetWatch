@@ -29,6 +29,7 @@ public class BattleActivity extends Activity {
     private ImageView enemy_battle_attack_effect_first, enemy_battle_attack_effect_second, enemy_battle_attack_effect_third;
     private ImageView battle_hit_effect_first, battle_hit_effect_second;
     private ImageView digimon_battle_win_down, digimon_battle_win_up, digimon_battle_win_sun;
+    private ImageView digimon_battle_lose_down, digimon_battle_lose_up, digimon_battle_lose_first, digimon_battle_lose_second;
 
     private Button button1, button2, button3;
 
@@ -44,6 +45,10 @@ public class BattleActivity extends Activity {
     //SharedPreferences 데이터 저장 관련 선언
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
+
+    //5판 3선에 사용될 변수
+    int winTimes = 0;
+    int loseTimes = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +116,11 @@ public class BattleActivity extends Activity {
         digimon_battle_win_down = findViewById(R.id.digimon_battle_win_down);
         digimon_battle_win_up = findViewById(R.id.digimon_battle_win_up);
         digimon_battle_win_sun = findViewById(R.id.digimon_battle_win_sun);
+
+        digimon_battle_lose_down = findViewById(R.id.digimon_battle_lose_down);
+        digimon_battle_lose_up = findViewById(R.id.digimon_battle_lose_up);
+        digimon_battle_lose_first = findViewById(R.id.digimon_battle_lose_first);
+        digimon_battle_lose_second = findViewById(R.id.digimon_battle_lose_second);
     }
 
     //버튼 초기화 부분
@@ -172,6 +182,7 @@ public class BattleActivity extends Activity {
     private void pageChange(int index) {
         switch (index) {
             case 0:
+                isHandlerRunning = true;
                 pageOne();
                 break;
             case 1:
@@ -184,14 +195,8 @@ public class BattleActivity extends Activity {
     }
 
     private void pageOne() {
-        winMotion();
-    }
+        int tmpDelay;
 
-    private void pageTwo() {
-        resetBattleViewsVisibility();
-    }
-
-    private void winMotion() {
         resetBattleViewsVisibility();
 
         MySoundPlayer.play(MySoundPlayer.sound7);
@@ -204,101 +209,186 @@ public class BattleActivity extends Activity {
 
         runDelayedAnimation(3200, battle_screen);
 
-        //첫번째 공격
-        runDelayedAnimation(4200, digimon_battle_close);
-        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound3), 4700);
-        handler.postDelayed(() -> effectChange(true), 4700);
-        runDelayedAnimation(4700, digimon_battle_open, battle_attack_effect_first);
-        runDelayedAnimation(5200, digimon_battle_open, battle_attack_effect_second);
-        runDelayedAnimation(5700, digimon_battle_open, battle_attack_effect_third);
+        tmpDelay = 4000;
 
-        runDelayedAnimation(6200, enemy_digimon_battle_close, enemy_battle_attack_effect_third);
-        runDelayedAnimation(6700, enemy_digimon_battle_close, enemy_battle_attack_effect_second);
-        runDelayedAnimation(7200, enemy_digimon_battle_close, enemy_battle_attack_effect_first);
+        //5판 3선
+        for (int i = 0; i < 5; i++) {
+            if (resultQuestFight()) {
+                tmpDelay = attackSuccessMotion(tmpDelay);
+                tmpDelay = defenseSuccessMotion(tmpDelay);
+            } else {
+                tmpDelay = attackFailMotion(tmpDelay);
+                tmpDelay = defenseFailMotion(tmpDelay);
+            }
+        }
+    }
 
-        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound4), 7400);
-        runDelayedAnimation(7700, battle_hit_effect_first);
-        runDelayedAnimation(7900, battle_hit_effect_second);
-        runDelayedAnimation(8100, battle_hit_effect_first);
-        runDelayedAnimation(8300, battle_hit_effect_second);
-        runDelayedAnimation(8500, battle_hit_effect_first);
+    private void pageTwo() {
+        resetBattleViewsVisibility();
+    }
 
-        //적 첫번째 공격
-        runDelayedAnimation(8700, enemy_digimon_battle_close);
-        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound3), 9200);
-        handler.postDelayed(() -> effectChange(false), 9200);
-        runDelayedAnimation(9200, enemy_digimon_battle_open, enemy_battle_attack_effect_first);
-        runDelayedAnimation(9700, enemy_digimon_battle_open, enemy_battle_attack_effect_second);
-        runDelayedAnimation(10200, enemy_digimon_battle_open, enemy_battle_attack_effect_third);
+    private int attackSuccessMotion(int delayTime) {
+        //공격 성공 모션
+        runDelayedAnimation(delayTime, digimon_battle_close);
+        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound3), delayTime + 500);
+        handler.postDelayed(() -> effectChange(true), delayTime + 500);
+        runDelayedAnimation(delayTime + 500, digimon_battle_open, battle_attack_effect_first);
+        runDelayedAnimation(delayTime + 1000, digimon_battle_open, battle_attack_effect_second);
+        runDelayedAnimation(delayTime + 1500, digimon_battle_open, battle_attack_effect_third);
 
-        runDelayedAnimation(10700, digimon_battle_close, battle_attack_effect_third);
-        runDelayedAnimation(11200, digimon_battle_close, battle_attack_effect_second);
-        runDelayedAnimation(11700, digimon_battle_close, battle_attack_effect_first);
-        runDelayedAnimation(12200, digimon_battle_close, true);
+        runDelayedAnimation(delayTime + 2000, enemy_digimon_battle_close, enemy_battle_attack_effect_third);
+        runDelayedAnimation(delayTime + 2500, enemy_digimon_battle_close, enemy_battle_attack_effect_second);
+        runDelayedAnimation(delayTime + 3000, enemy_digimon_battle_close, enemy_battle_attack_effect_first);
 
-        //두번째 공격
-        runDelayedAnimation(12700, digimon_battle_close);
-        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound3), 12700);
-        handler.postDelayed(() -> effectChange(true), 12700);
-        runDelayedAnimation(13200, digimon_battle_open, battle_attack_effect_first);
-        runDelayedAnimation(13700, digimon_battle_open, battle_attack_effect_second);
-        runDelayedAnimation(14200, digimon_battle_open, battle_attack_effect_third);
+        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound4), delayTime + 3200);
+        runDelayedAnimation(delayTime + 3500, battle_hit_effect_first);
+        runDelayedAnimation(delayTime + 3700, battle_hit_effect_second);
+        runDelayedAnimation(delayTime + 3900, battle_hit_effect_first);
+        runDelayedAnimation(delayTime + 4100, battle_hit_effect_second);
+        runDelayedAnimation(delayTime + 4300, battle_hit_effect_first);
 
-        runDelayedAnimation(14700, enemy_digimon_battle_close, enemy_battle_attack_effect_third);
-        runDelayedAnimation(15200, enemy_digimon_battle_close, enemy_battle_attack_effect_second);
-        runDelayedAnimation(15700, enemy_digimon_battle_close, enemy_battle_attack_effect_first);
+        handler.postDelayed(() -> winTimes++, delayTime + 4500);
+        handler.postDelayed(() -> Log.d("win", "winTimes : " + winTimes), delayTime + 4500);
+        handler.postDelayed(() -> {
+            if (winTimes == 3) {
+                Log.d("win", "승리 분기진입");
+                handler.removeCallbacksAndMessages(null);
+                MySoundPlayer.stop();
 
-        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound4), 15900);
-        runDelayedAnimation(16200, battle_hit_effect_first);
-        runDelayedAnimation(16400, battle_hit_effect_second);
-        runDelayedAnimation(16600, battle_hit_effect_first);
-        runDelayedAnimation(16800, battle_hit_effect_second);
-        runDelayedAnimation(17000, battle_hit_effect_first);
+                finalWinMotion(0);
+            }
+        }, delayTime + 4500);
 
-        //적 두번째 공격
-        runDelayedAnimation(17200, enemy_digimon_battle_close);
-        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound3), 17700);
-        handler.postDelayed(() -> effectChange(false), 17700);
-        runDelayedAnimation(17700, enemy_digimon_battle_open, enemy_battle_attack_effect_first);
-        runDelayedAnimation(18200, enemy_digimon_battle_open, enemy_battle_attack_effect_second);
-        runDelayedAnimation(18700, enemy_digimon_battle_open, enemy_battle_attack_effect_third);
+        return delayTime + 4500;
+    }
 
-        runDelayedAnimation(19200, digimon_battle_close, battle_attack_effect_third);
-        runDelayedAnimation(19700, digimon_battle_close, battle_attack_effect_second);
-        runDelayedAnimation(20200, digimon_battle_close, battle_attack_effect_first);
-        runDelayedAnimation(20700, digimon_battle_close, true);
+    private int defenseSuccessMotion(int delayTime) {
+        //방어 성공 모션
+        runDelayedAnimation(delayTime, enemy_digimon_battle_close);
+        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound3), delayTime + 500);
+        handler.postDelayed(() -> effectChange(false), delayTime + 500);
+        runDelayedAnimation(delayTime + 500, enemy_digimon_battle_open, enemy_battle_attack_effect_first);
+        runDelayedAnimation(delayTime + 1000, enemy_digimon_battle_open, enemy_battle_attack_effect_second);
+        runDelayedAnimation(delayTime + 1500, enemy_digimon_battle_open, enemy_battle_attack_effect_third);
 
-        //세번째 공격
-        runDelayedAnimation(21200, digimon_battle_close);
-        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound3), 21200);
-        handler.postDelayed(() -> effectChange(true), 21200);
-        runDelayedAnimation(21700, digimon_battle_open, battle_attack_effect_first);
-        runDelayedAnimation(22200, digimon_battle_open, battle_attack_effect_second);
-        runDelayedAnimation(22700, digimon_battle_open, battle_attack_effect_third);
+        runDelayedAnimation(delayTime + 2000, digimon_battle_close, battle_attack_effect_third);
+        runDelayedAnimation(delayTime + 2500, digimon_battle_close, battle_attack_effect_second);
+        runDelayedAnimation(delayTime + 3000, digimon_battle_close, battle_attack_effect_first);
+        runDelayedAnimation(delayTime + 3500, digimon_battle_close, true);
 
-        runDelayedAnimation(23200, enemy_digimon_battle_close, enemy_battle_attack_effect_third);
-        runDelayedAnimation(23700, enemy_digimon_battle_close, enemy_battle_attack_effect_second);
-        runDelayedAnimation(24200, enemy_digimon_battle_close, enemy_battle_attack_effect_first);
+        return delayTime + 4000;
+    }
 
-        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound4), 24400);
-        runDelayedAnimation(24700, battle_hit_effect_first);
-        runDelayedAnimation(24900, battle_hit_effect_second);
-        runDelayedAnimation(25100, battle_hit_effect_first);
-        runDelayedAnimation(25300, battle_hit_effect_second);
-        runDelayedAnimation(25500, battle_hit_effect_first);
+    private int attackFailMotion(int delayTime) {
+        //공격 실패 모션
+        runDelayedAnimation(delayTime, digimon_battle_close);
+        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound3), delayTime + 500);
+        handler.postDelayed(() -> effectChange(true), delayTime + 500);
+        runDelayedAnimation(delayTime + 500, digimon_battle_open, battle_attack_effect_first);
+        runDelayedAnimation(delayTime + 1000, digimon_battle_open, battle_attack_effect_second);
+        runDelayedAnimation(delayTime + 1500, digimon_battle_open, battle_attack_effect_third);
+
+        runDelayedAnimation(delayTime + 2000, enemy_digimon_battle_close, enemy_battle_attack_effect_third);
+        runDelayedAnimation(delayTime + 2500, enemy_digimon_battle_close, enemy_battle_attack_effect_second);
+        runDelayedAnimation(delayTime + 3000, enemy_digimon_battle_close, enemy_battle_attack_effect_first);
+        runDelayedAnimation(delayTime + 3500, enemy_digimon_battle_close, true);
+
+        return delayTime + 4000;
+    }
+
+    private int defenseFailMotion(int delayTime) {
+        //방어 실패 모션
+        runDelayedAnimation(delayTime, enemy_digimon_battle_close);
+        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound3), delayTime + 500);
+        handler.postDelayed(() -> effectChange(false), delayTime + 500);
+        runDelayedAnimation(delayTime + 500, enemy_digimon_battle_open, enemy_battle_attack_effect_first);
+        runDelayedAnimation(delayTime + 1000, enemy_digimon_battle_open, enemy_battle_attack_effect_second);
+        runDelayedAnimation(delayTime + 1500, enemy_digimon_battle_open, enemy_battle_attack_effect_third);
+
+        runDelayedAnimation(delayTime + 2000, digimon_battle_close, battle_attack_effect_third);
+        runDelayedAnimation(delayTime + 2500, digimon_battle_close, battle_attack_effect_second);
+        runDelayedAnimation(delayTime + 3000, digimon_battle_close, battle_attack_effect_first);
+
+        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound4), delayTime + 3200);
+        runDelayedAnimation(delayTime + 3500, battle_hit_effect_first);
+        runDelayedAnimation(delayTime + 3700, battle_hit_effect_second);
+        runDelayedAnimation(delayTime + 3900, battle_hit_effect_first);
+        runDelayedAnimation(delayTime + 4100, battle_hit_effect_second);
+        runDelayedAnimation(delayTime + 4300, battle_hit_effect_first);
+
+        handler.postDelayed(() -> loseTimes++, delayTime + 4500);
+        handler.postDelayed(() -> Log.d("win", "loseTimes : " + loseTimes), delayTime + 4500);
+        handler.postDelayed(() -> {
+            if (loseTimes == 3) {
+                Log.d("win", "패배 분기진입");
+                handler.removeCallbacksAndMessages(null);
+                MySoundPlayer.stop();
+
+                finalLoseMotion(0);
+            }
+        }, delayTime + 4500);
+
+        return delayTime + 4500;
+    }
+
+    private void finalWinMotion(int delayTime) {
+        //결과 계산 후 기입
+        health--;
+        fightnum++;
+        winnum++;
+        winrate = winRateResult(fightnum, winnum);
+
+        if ((scarrate / 10) > getRandomValue()) {
+            scarResult();
+        }
+
+        editor.putInt("health", health);
+        editor.putInt("fightnum", fightnum);
+        editor.putInt("winnum", winnum);
+        editor.putInt("winrate", winrate);
+        editor.apply();
 
         //승리 모션
-        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound5), 25700);
-        runDelayedAnimation(25700, digimon_battle_win_down);
-        runDelayedAnimation(26200, digimon_battle_win_up, digimon_battle_win_sun);
-        runDelayedAnimation(26700, digimon_battle_win_down);
-        runDelayedAnimation(27200, digimon_battle_win_up, digimon_battle_win_sun);
-        runDelayedAnimation(27700, digimon_battle_win_down);
-        runDelayedAnimation(28200, digimon_battle_win_up, digimon_battle_win_sun);
-        runDelayedAnimation(28700, digimon_battle_win_down);
-        runDelayedAnimation(29200, digimon_battle_win_up, digimon_battle_win_sun);
+        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound5), delayTime);
+        runDelayedAnimation(delayTime, digimon_battle_win_down);
+        runDelayedAnimation(delayTime + 500, digimon_battle_win_up, digimon_battle_win_sun);
+        runDelayedAnimation(delayTime + 1000, digimon_battle_win_down);
+        runDelayedAnimation(delayTime + 1500, digimon_battle_win_up, digimon_battle_win_sun);
+        runDelayedAnimation(delayTime + 2000, digimon_battle_win_down);
+        runDelayedAnimation(delayTime + 2500, digimon_battle_win_up, digimon_battle_win_sun);
+        runDelayedAnimation(delayTime + 3000, digimon_battle_win_down);
+        runDelayedAnimation(delayTime + 3500, digimon_battle_win_up, digimon_battle_win_sun);
 
-        handler.postDelayed(() -> closeActivity(), 29700);
+        handler.postDelayed(() -> closeActivity(), 4000);
+    }
+
+    private void finalLoseMotion(int delayTime) {
+        //결과 계산 후 기입
+        health--;
+        fightnum++;
+        winrate = winRateResult(fightnum, winnum);
+
+        if (scarrate > getRandomValue()) {
+            scarResult();
+        }
+
+        editor.putInt("health", health);
+        editor.putInt("fightnum", fightnum);
+        editor.putInt("winrate", winrate);
+        editor.apply();
+
+        //패배 모션
+        handler.postDelayed(() -> MySoundPlayer.play(MySoundPlayer.sound6), delayTime);
+        runDelayedAnimation(delayTime, digimon_battle_lose_down, digimon_battle_lose_first);
+        runDelayedAnimation(delayTime + 500, digimon_battle_lose_up, digimon_battle_lose_second);
+        runDelayedAnimation(delayTime + 1000, digimon_battle_lose_down, digimon_battle_lose_first);
+        runDelayedAnimation(delayTime + 1500, digimon_battle_lose_up, digimon_battle_lose_second);
+        runDelayedAnimation(delayTime + 2000, digimon_battle_lose_down, digimon_battle_lose_first);
+        runDelayedAnimation(delayTime + 2500, digimon_battle_lose_up, digimon_battle_lose_second);
+        runDelayedAnimation(delayTime + 3000, digimon_battle_lose_down, digimon_battle_lose_first);
+        runDelayedAnimation(delayTime + 3500, digimon_battle_lose_up, digimon_battle_lose_second);
+
+        handler.postDelayed(() -> closeActivity(), 4000);
     }
 
     private void closeActivity() {
@@ -312,14 +402,25 @@ public class BattleActivity extends Activity {
         finish();//현재 액티비티 종료
     }
 
+    private int winRateResult(int fightnum, int winnum) {
+        return (int) ((winnum / (float) fightnum) * 100);
+    }
+
+    private void scarResult() {
+        cure = true;
+        editor.putBoolean("cure", cure);
+        editor.apply();
+    }
+
     private boolean resultQuestFight() {
         int finalValue = getRandomValue() + pwr + (heffort / 100);//랜덤값에서 보정치값을 더해 승부 결과 계산
         boolean win;
-        if (finalValue > 30) {//최종값이 30을 넘으면
+        if (finalValue > 40) {//최종값이 40을 넘으면
             win = true;//승리
         } else {
             win = false;//패배
         }
+        Log.d("win", String.valueOf(win));
         return win;
     }
 
@@ -428,5 +529,10 @@ public class BattleActivity extends Activity {
         digimon_battle_win_down.setVisibility(View.INVISIBLE);
         digimon_battle_win_up.setVisibility(View.INVISIBLE);
         digimon_battle_win_sun.setVisibility(View.INVISIBLE);
+
+        digimon_battle_lose_down.setVisibility(View.INVISIBLE);
+        digimon_battle_lose_up.setVisibility(View.INVISIBLE);
+        digimon_battle_lose_first.setVisibility(View.INVISIBLE);
+        digimon_battle_lose_second.setVisibility(View.INVISIBLE);
     }
 }
