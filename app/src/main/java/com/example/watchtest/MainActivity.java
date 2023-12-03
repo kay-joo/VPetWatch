@@ -28,8 +28,13 @@ public class MainActivity extends Activity {
     private Handler handler = new Handler(Looper.getMainLooper());
     private Runnable runnable;
 
+    boolean isHandlerRunning = false;
+
     private ActivityMainBinding binding;
     private ImageView digimon0, digimonUpP1, digimonDownP2, digimonDownP3, digimonDownP4, digimonEmotionP4, digimonUpM1, digimonDownM2, digimonDownM3, digimonDownM4, digimonEmotionM4;
+    private ImageView digimon_hate_emotion0, digimon_sick_emotion_down, digimon_sick_emotion_up, effect_sick_first, effect_sick_second;
+    private ImageView digimon_cure_emotion_down, digimon_cure_emotion_up, effect_cure_first, effect_cure_second;
+    private ImageView digimon_dead;
     private ImageView uiBlackStatus, uiBlackFood, uiBlackTraining, uiBlackBattle, uiBlackPoop, uiBlackLight, uiBlackCure, uiBlackCall;
     private Button button1, button2, button3;
 
@@ -39,7 +44,7 @@ public class MainActivity extends Activity {
 
     //게임 내에서 사용될 변수들
     private int age, weight, hungry, strength, effort, health, winrate, winnum, fightnum;//상태창에서 사용될 변수들
-    private int mistake, overfeed, sleepdis, scarrate, poop, pwr, heffort;//게임 내부에서 동작할 변수들
+    private int mistake, overfeed, sleepdis, scarrate, poop, pwr, heffort, scarnum;//게임 내부에서 동작할 변수들
     private boolean cure;//상처입었는지 판단용 변수
 
     //SharedPreferences 데이터 저장 관련 선언
@@ -139,6 +144,7 @@ public class MainActivity extends Activity {
         poop = preferences.getInt("poop", 0);
         pwr = preferences.getInt("pwr", 10);
         heffort = preferences.getInt("heffort", 0);
+        scarnum = preferences.getInt("scarnum", 0);
         cure = preferences.getBoolean("cure", false);
     }
 
@@ -155,6 +161,20 @@ public class MainActivity extends Activity {
         digimonDownM3 = findViewById(R.id.digimon_normal_down_m3);
         digimonDownM4 = findViewById(R.id.digimon_normal_down_m4);
         digimonEmotionM4 = findViewById(R.id.digimon_normal_emotion_m4);
+
+        digimon_hate_emotion0 = findViewById(R.id.digimon_hate_emotion0);
+
+        digimon_sick_emotion_down = findViewById(R.id.digimon_sick_emotion_down);
+        digimon_sick_emotion_up = findViewById(R.id.digimon_sick_emotion_up);
+        effect_sick_first = findViewById(R.id.effect_sick_first);
+        effect_sick_second = findViewById(R.id.effect_sick_second);
+
+        digimon_cure_emotion_down = findViewById(R.id.digimon_cure_emotion_down);
+        digimon_cure_emotion_up = findViewById(R.id.digimon_cure_emotion_up);
+        effect_cure_first = findViewById(R.id.effect_cure_first);
+        effect_cure_second = findViewById(R.id.effect_cure_second);
+
+        digimon_dead = findViewById(R.id.digimon_dead);
 
         uiBlackStatus = findViewById(R.id.UI_black_status);
         uiBlackFood = findViewById(R.id.UI_black_food);
@@ -175,23 +195,35 @@ public class MainActivity extends Activity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MySoundPlayer.play(MySoundPlayer.sound1);
-                //1번 버튼을 누를때 마다 인덱스 상승
-                if (index < 7) {//인덱스가 7이 넘어가면
-                    index++;
+                if (scarnum == 20) {
+                    //디지몬 죽음 상태일때는 버튼 동작 중지
+                } else if (isHandlerRunning) {
+                    //핸들러가 동작 중일 때는 버튼 동작 중지
                 } else {
-                    index = 0;//0으로 다시 설정
+                    MySoundPlayer.play(MySoundPlayer.sound1);
+                    //1번 버튼을 누를때 마다 인덱스 상승
+                    if (index < 7) {//인덱스가 7이 넘어가면
+                        index++;
+                    } else {
+                        index = 0;//0으로 다시 설정
+                    }
+                    moveTap(index);
                 }
-                moveTap(index);
             }
         });
 
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (index != 0) {
-                    MySoundPlayer.play(MySoundPlayer.sound1);
-                    changeActivity(index);
+                if (scarnum == 20) {
+                    //디지몬 죽음 상태일때는 버튼 동작 중지
+                } else if (isHandlerRunning) {
+                    //핸들러가 동작 중일 때는 버튼 동작 중지
+                } else {
+                    if (index != 0) {
+                        MySoundPlayer.play(MySoundPlayer.sound1);
+                        changeActivity(index);
+                    }
                 }
             }
         });
@@ -199,7 +231,9 @@ public class MainActivity extends Activity {
         button3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (index != 0) {
+                if (scarnum == 20) {
+                    //디지몬 죽음 상태일때는 버튼 동작 중지
+                } else if (index != 0) {
                     MySoundPlayer.play(MySoundPlayer.sound1);
                     index = 0;
                     moveTap(index);
@@ -217,28 +251,48 @@ public class MainActivity extends Activity {
                 finish();//현재 액티비티 종료
                 break;
             case 2:
-                intent = new Intent(MainActivity.this, FoodActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
-                startActivity(intent);
-                finish();//현재 액티비티 종료
+                if (cure) {
+                    digimonStatusHate();
+                } else {
+                    intent = new Intent(MainActivity.this, FoodActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                    startActivity(intent);
+                    finish();//현재 액티비티 종료
+
+                }
                 break;
             case 3:
-                intent = new Intent(MainActivity.this, TrainingActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
-                startActivity(intent);
-                finish();//현재 액티비티 종료
+                if (cure) {
+                    digimonStatusHate();
+                } else {
+                    intent = new Intent(MainActivity.this, TrainingActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                    startActivity(intent);
+                    finish();//현재 액티비티 종료
+                }
                 break;
             case 4:
-                intent = new Intent(MainActivity.this, BattleActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
-                startActivity(intent);
-                finish();//현재 액티비티 종료
+                if (health == 0 || cure) {
+                    digimonStatusHate();
+                } else {
+                    intent = new Intent(MainActivity.this, BattleActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                    startActivity(intent);
+                    finish();//현재 액티비티 종료
+                }
                 break;
             case 5:
+                digimonStatusHate();
                 break;
             case 6:
+                digimonStatusHate();
                 break;
             case 7:
+                if (cure) {
+                    digimonStatusCure();
+                } else {
+                    digimonStatusHate();
+                }
                 break;
             default:
                 break;
@@ -293,47 +347,132 @@ public class MainActivity extends Activity {
 
     private void digimonStatusNormal() {
         //Log.d("DigimonStatus", "Start digimonStatusNormal()");
+        isHandlerRunning = false;
+        if (scarnum == 20) {
+            digimon_dead.setVisibility(View.VISIBLE);
+        } else if (cure) {
+            digimonStatusSick();
+        } else {
 
-        runDelayedAnimation(0, digimon0);
+            runDelayedAnimation(0, digimon0);
 
-        runDelayedAnimation(500, digimonUpP1);
-        runDelayedAnimation(1000, digimonDownP2);
-        runDelayedAnimation(1500, digimonDownP2, true);
-        runDelayedAnimation(2000, digimonUpP1, true);
-        runDelayedAnimation(2500, digimonUpP1);
-        runDelayedAnimation(3000, digimonDownP2);
-        runDelayedAnimation(3500, digimonDownP3);
-        runDelayedAnimation(4000, digimonDownP4);
-        runDelayedAnimation(4500, digimonDownP4, true);
-        runDelayedAnimation(5000, digimonDownP4);
-        runDelayedAnimation(5500, digimonEmotionP4);
-        runDelayedAnimation(6000, digimonDownP4);
-        runDelayedAnimation(6500, digimonEmotionP4);
-        runDelayedAnimation(7000, digimonDownP4);
-        runDelayedAnimation(7500, digimonDownP4, true);
-        runDelayedAnimation(8000, digimonDownP3, true);
-        runDelayedAnimation(8500, digimonDownP2, true);
-        runDelayedAnimation(9000, digimonUpP1, true);
-        runDelayedAnimation(9500, digimon0, true);
+            runDelayedAnimation(500, digimonUpP1);
+            runDelayedAnimation(1000, digimonDownP2);
+            runDelayedAnimation(1500, digimonDownP2, true);
+            runDelayedAnimation(2000, digimonUpP1, true);
+            runDelayedAnimation(2500, digimonUpP1);
+            runDelayedAnimation(3000, digimonDownP2);
+            runDelayedAnimation(3500, digimonDownP3);
+            runDelayedAnimation(4000, digimonDownP4);
+            runDelayedAnimation(4500, digimonDownP4, true);
+            runDelayedAnimation(5000, digimonDownP4);
+            runDelayedAnimation(5500, digimonEmotionP4);
+            runDelayedAnimation(6000, digimonDownP4);
+            runDelayedAnimation(6500, digimonEmotionP4);
+            runDelayedAnimation(7000, digimonDownP4);
+            runDelayedAnimation(7500, digimonDownP4, true);
+            runDelayedAnimation(8000, digimonDownP3, true);
+            runDelayedAnimation(8500, digimonDownP2, true);
+            runDelayedAnimation(9000, digimonUpP1, true);
+            runDelayedAnimation(9500, digimon0, true);
 
-        runDelayedAnimation(10000, digimonUpM1, true);
-        runDelayedAnimation(10500, digimonDownM2, true);
-        runDelayedAnimation(11000, digimonDownM2);
-        runDelayedAnimation(11500, digimonUpM1);
-        runDelayedAnimation(12000, digimonUpM1, true);
-        runDelayedAnimation(12500, digimonDownM2, true);
-        runDelayedAnimation(13000, digimonDownM3, true);
-        runDelayedAnimation(13500, digimonDownM4, true);
-        runDelayedAnimation(14000, digimonDownM4);
-        runDelayedAnimation(14500, digimonDownM4, true);
-        runDelayedAnimation(15000, digimonEmotionM4, true);
-        runDelayedAnimation(15500, digimonDownM4, true);
-        runDelayedAnimation(16000, digimonEmotionM4, true);
-        runDelayedAnimation(16500, digimonDownM4, true);
-        runDelayedAnimation(17000, digimonDownM4);
-        runDelayedAnimation(17500, digimonDownM3);
-        runDelayedAnimation(18000, digimonDownM2);
-        runDelayedAnimation(18500, digimonUpM1);
+            runDelayedAnimation(10000, digimonUpM1, true);
+            runDelayedAnimation(10500, digimonDownM2, true);
+            runDelayedAnimation(11000, digimonDownM2);
+            runDelayedAnimation(11500, digimonUpM1);
+            runDelayedAnimation(12000, digimonUpM1, true);
+            runDelayedAnimation(12500, digimonDownM2, true);
+            runDelayedAnimation(13000, digimonDownM3, true);
+            runDelayedAnimation(13500, digimonDownM4, true);
+            runDelayedAnimation(14000, digimonDownM4);
+            runDelayedAnimation(14500, digimonDownM4, true);
+            runDelayedAnimation(15000, digimonEmotionM4, true);
+            runDelayedAnimation(15500, digimonDownM4, true);
+            runDelayedAnimation(16000, digimonEmotionM4, true);
+            runDelayedAnimation(16500, digimonDownM4, true);
+            runDelayedAnimation(17000, digimonDownM4);
+            runDelayedAnimation(17500, digimonDownM3);
+            runDelayedAnimation(18000, digimonDownM2);
+            runDelayedAnimation(18500, digimonUpM1);
+        }
+    }
+
+    private void digimonStatusHate() {
+        isHandlerRunning = true;
+        stopDigimonStatusUpdates();
+
+        runDelayedAnimation(0, digimon_hate_emotion0);
+        runDelayedAnimation(500, digimon_hate_emotion0, true);
+        runDelayedAnimation(1000, digimon_hate_emotion0);
+        runDelayedAnimation(1500, digimon_hate_emotion0, true);
+        runDelayedAnimation(2000, digimon_hate_emotion0);
+        runDelayedAnimation(2500, digimon_hate_emotion0, true);
+        runDelayedAnimation(3000, digimon_hate_emotion0);
+
+        handler.postDelayed(() -> startDigimonStatusUpdates(), 3500);
+    }
+
+    private void digimonStatusCure() {
+        isHandlerRunning = true;
+        stopDigimonStatusUpdates();
+
+        MySoundPlayer.play(MySoundPlayer.sound6);
+        runDelayedAnimation(0, digimon_cure_emotion_down, effect_cure_first);
+        runDelayedAnimation(500, digimon_cure_emotion_up, effect_cure_second);
+        runDelayedAnimation(1000, digimon_cure_emotion_down, effect_cure_first);
+        runDelayedAnimation(1500, digimon_cure_emotion_up, effect_cure_second);
+        runDelayedAnimation(2000, digimon_cure_emotion_down, effect_cure_first);
+        runDelayedAnimation(2500, digimon_cure_emotion_up, effect_cure_second);
+        runDelayedAnimation(3000, digimon_cure_emotion_down, effect_cure_first);
+        runDelayedAnimation(3500, digimon_cure_emotion_up, effect_cure_second);
+
+        handler.postDelayed(() -> {
+            cure = false;
+            editor.putBoolean("cure", cure);
+            editor.apply();
+        }, 4000);
+        handler.postDelayed(() -> startDigimonStatusUpdates(), 4000);
+    }
+
+    private void digimonStatusSick() {
+        runDelayedAnimation(0, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(1000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(1500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(2000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(2500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(3000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(3500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(4000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(4500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(5000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(5500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(6000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(6500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(7000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(7500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(8000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(8500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(9000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(9500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(10000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(10500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(11000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(11500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(12000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(12500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(13000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(13500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(14000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(14500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(15000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(15500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(16000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(16500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(17000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(17500, digimon_sick_emotion_up, effect_sick_second);
+        runDelayedAnimation(18000, digimon_sick_emotion_down, effect_sick_first);
+        runDelayedAnimation(18500, digimon_sick_emotion_up, effect_sick_second);
     }
 
     private void runDelayedAnimation(int delay, final ImageView imageView) {
@@ -342,6 +481,10 @@ public class MainActivity extends Activity {
 
     private void runDelayedAnimation(int delay, final ImageView imageView, final boolean isInverted) {
         handler.postDelayed(() -> animateDigimon(imageView, isInverted), delay);
+    }
+
+    private void runDelayedAnimation(int delay, final ImageView imageView, final ImageView imageView2) {
+        handler.postDelayed(() -> animateDigimon(imageView, imageView2), delay);
     }
 
     private void animateDigimon(ImageView imageView) {
@@ -355,6 +498,14 @@ public class MainActivity extends Activity {
         if (isInverted) {
             imageView.setScaleX(-1);
         }
+    }
+
+    private void animateDigimon(ImageView imageView, ImageView imageView2) {
+        resetDigimonViewsVisibility();
+        imageView.setVisibility(View.VISIBLE);
+        imageView2.setVisibility(View.VISIBLE);
+        imageView.setScaleX(1); // 방향 초기화
+        imageView2.setScaleX(1);
     }
 
     private void moveTap(int index) {
@@ -400,6 +551,16 @@ public class MainActivity extends Activity {
         digimonDownM3.setVisibility(View.INVISIBLE);
         digimonDownM4.setVisibility(View.INVISIBLE);
         digimonEmotionM4.setVisibility(View.INVISIBLE);
+        digimon_hate_emotion0.setVisibility(View.INVISIBLE);
+        digimon_sick_emotion_down.setVisibility(View.INVISIBLE);
+        digimon_sick_emotion_up.setVisibility(View.INVISIBLE);
+        effect_sick_first.setVisibility(View.INVISIBLE);
+        effect_sick_second.setVisibility(View.INVISIBLE);
+        digimon_cure_emotion_down.setVisibility(View.INVISIBLE);
+        digimon_cure_emotion_up.setVisibility(View.INVISIBLE);
+        effect_cure_first.setVisibility(View.INVISIBLE);
+        effect_cure_second.setVisibility(View.INVISIBLE);
+        digimon_dead.setVisibility(View.INVISIBLE);
     }
 
     private void resetUiViewsVisibility() {

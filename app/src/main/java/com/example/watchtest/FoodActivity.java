@@ -32,7 +32,7 @@ public class FoodActivity extends Activity {
 
     //게임 내에서 사용될 변수들
     private int age, weight, hungry, strength, effort, health, winrate, winnum, fightnum;//상태창에서 사용될 변수들
-    private int mistake, overfeed, sleepdis, scarrate, poop, pwr, heffort;//게임 내부에서 동작할 변수들
+    private int mistake, overfeed, sleepdis, scarrate, poop, pwr, heffort, scarnum;//게임 내부에서 동작할 변수들
     private boolean cure;//상처입었는지 판단용 변수
 
     private int tmpHealth;//프로틴 4개 먹일 때마다 체력 1을 상승시키기 위한 임시 변수
@@ -75,6 +75,7 @@ public class FoodActivity extends Activity {
         poop = preferences.getInt("poop", 0);
         pwr = preferences.getInt("pwr", 10);
         heffort = preferences.getInt("heffort", 0);
+        scarnum = preferences.getInt("scarnum", 0);
         cure = preferences.getBoolean("cure", false);
 
         tmpHealth = preferences.getInt("tmpHealth", 0);
@@ -203,7 +204,7 @@ public class FoodActivity extends Activity {
             health++;
             tmpHealth = 0;
         }
-        if (scarrate < 30) {
+        if (scarrate < 60) {
             scarrate++;
         }
 

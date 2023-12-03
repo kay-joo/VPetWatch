@@ -35,7 +35,7 @@ public class TrainingActivity extends Activity {
 
     //게임 내에서 사용될 변수들
     private int age, weight, hungry, strength, effort, health, winrate, winnum, fightnum;//상태창에서 사용될 변수들
-    private int mistake, overfeed, sleepdis, scarrate, poop, pwr, heffort;//게임 내부에서 동작할 변수들
+    private int mistake, overfeed, sleepdis, scarrate, poop, pwr, heffort, scarnum;//게임 내부에서 동작할 변수들
     private boolean cure;//상처입었는지 판단용 변수
 
     //SharedPreferences 데이터 저장 관련 선언
@@ -353,6 +353,7 @@ public class TrainingActivity extends Activity {
         poop = preferences.getInt("poop", 0);
         pwr = preferences.getInt("pwr", 10);
         heffort = preferences.getInt("heffort", 0);
+        scarnum = preferences.getInt("scarnum", 0);
         cure = preferences.getBoolean("cure", false);
     }
 

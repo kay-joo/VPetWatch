@@ -39,7 +39,7 @@ public class BattleActivity extends Activity {
 
     //게임 내에서 사용될 변수들
     private int age, weight, hungry, strength, effort, health, winrate, winnum, fightnum;//상태창에서 사용될 변수들
-    private int mistake, overfeed, sleepdis, scarrate, poop, pwr, heffort;//게임 내부에서 동작할 변수들
+    private int mistake, overfeed, sleepdis, scarrate, poop, pwr, heffort, scarnum;//게임 내부에서 동작할 변수들
     private boolean cure;//상처입었는지 판단용 변수
 
     //SharedPreferences 데이터 저장 관련 선언
@@ -84,6 +84,7 @@ public class BattleActivity extends Activity {
         poop = preferences.getInt("poop", 0);
         pwr = preferences.getInt("pwr", 10);
         heffort = preferences.getInt("heffort", 0);
+        scarnum = preferences.getInt("scarnum", 0);
         cure = preferences.getBoolean("cure", false);
     }
 
@@ -150,14 +151,10 @@ public class BattleActivity extends Activity {
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MySoundPlayer.play(MySoundPlayer.sound1);
                 if (isHandlerRunning) {
-                    //핸들러가 동작 중일 때 2번 버튼을 누르면 애니메이션 스킵, 데이터는 증가
-                    //핸들러 강제 정지
-                    handler.removeCallbacksAndMessages(null);
-                    isHandlerRunning = false;
-                    arrowChange(index);
+                    //핸들러가 동작 중일 때는 버튼 동작 중지
                 } else {
+                    MySoundPlayer.play(MySoundPlayer.sound1);
                     pageChange(index);
                 }
             }
@@ -338,7 +335,7 @@ public class BattleActivity extends Activity {
         winnum++;
         winrate = winRateResult(fightnum, winnum);
 
-        if ((scarrate / 10) > getRandomValue()) {
+        if ((scarrate / 10) > getRandomValue()) {//상처확률에 따른 상처 결과
             scarResult();
         }
 
@@ -368,7 +365,7 @@ public class BattleActivity extends Activity {
         fightnum++;
         winrate = winRateResult(fightnum, winnum);
 
-        if (scarrate > getRandomValue()) {
+        if (scarrate > getRandomValue()) {//상처확률에 따른 상처 결과
             scarResult();
         }
 
@@ -408,7 +405,9 @@ public class BattleActivity extends Activity {
 
     private void scarResult() {
         cure = true;
+        scarnum++;
         editor.putBoolean("cure", cure);
+        editor.putInt("scarnum", scarnum);
         editor.apply();
     }
 
