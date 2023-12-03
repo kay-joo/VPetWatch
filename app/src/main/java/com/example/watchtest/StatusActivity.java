@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -21,7 +22,7 @@ public class StatusActivity extends Activity {
     private ImageView status_effort, status_effort_heart_one, status_effort_heart_two, status_effort_heart_three, status_effort_heart_four;
     private ImageView status_health, status_progressbar_bottom, status_progressbar_mid_left, status_progressbar_mid_right, status_progressbar_top;
     private ImageView status_progressbar_gauge[] = new ImageView[16];
-    private ImageView status_winrate, status_winrate_first_one, status_winrate_second_one, status_winrate_percentage;
+    private ImageView status_winrate, status_winrate_first_one, status_winrate_second_one, status_winrate_third_one, status_winrate_percentage;
 
     private Button button1, button2, button3;
 
@@ -53,16 +54,25 @@ public class StatusActivity extends Activity {
 
     private void initializeImageNumber(int num, ImageView imageView1, ImageView imageView2) {
         // 초기 숫자 이미지 표시
-        int initialDigit1 = num / 10;
-        int initialDigit2 = num % 10;
-        if (num > 9) {
+        if (num == 100) {
+            status_winrate_third_one.setVisibility(View.VISIBLE);
+            imageView1.setImageResource(getResources().getIdentifier("ui_number_zero", "drawable", getPackageName()));
+            imageView2.setImageResource(getResources().getIdentifier("ui_number_zero", "drawable", getPackageName()));
             imageView1.setVisibility(View.VISIBLE);
-            imageView1.setImageResource(getImageResourceId(initialDigit1));
+            imageView2.setVisibility(View.VISIBLE);
         } else {
-            imageView1.setVisibility(View.INVISIBLE);
+
+            int initialDigit1 = num / 10;
+            int initialDigit2 = num % 10;
+            if (num > 9) {
+                imageView1.setVisibility(View.VISIBLE);
+                imageView1.setImageResource(getImageResourceId(initialDigit1));
+            } else {
+                imageView1.setVisibility(View.INVISIBLE);
+            }
+            imageView2.setVisibility(View.VISIBLE);
+            imageView2.setImageResource(getImageResourceId(initialDigit2));
         }
-        imageView2.setVisibility(View.VISIBLE);
-        imageView2.setImageResource(getImageResourceId(initialDigit2));
     }
 
     private int getImageResourceId(int digit) {
@@ -168,6 +178,7 @@ public class StatusActivity extends Activity {
         status_winrate = findViewById(R.id.status_winrate);
         status_winrate_first_one = findViewById(R.id.status_winrate_first_one);
         status_winrate_second_one = findViewById(R.id.status_winrate_second_one);
+        status_winrate_third_one = findViewById(R.id.status_winrate_third_one);
         status_winrate_percentage = findViewById(R.id.status_winrate_percentage);
     }
 
@@ -462,6 +473,7 @@ public class StatusActivity extends Activity {
         status_winrate.setVisibility(View.INVISIBLE);
         status_winrate_first_one.setVisibility(View.INVISIBLE);
         status_winrate_second_one.setVisibility(View.INVISIBLE);
+        status_winrate_third_one.setVisibility(View.INVISIBLE);
         status_winrate_percentage.setVisibility(View.INVISIBLE);
     }
 }
