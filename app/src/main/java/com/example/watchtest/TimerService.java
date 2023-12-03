@@ -83,9 +83,9 @@ public class TimerService extends android.app.Service {
                     NotificationHelper.showNotification(getApplicationContext(), "VPetWatch", "Strength decreased");
                 }
                 editor.apply();
-                handler.postDelayed(this, 3600000); // 1시간마다 실행
+                handler.postDelayed(this, 1200000); // 20분 마다 실행
             }
-        }, 3600000); // 1시간 후에 실행
+        }, 1200000); // 20분 후에 실행
 
         return START_STICKY;
     }

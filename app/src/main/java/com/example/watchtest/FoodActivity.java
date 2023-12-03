@@ -31,8 +31,8 @@ public class FoodActivity extends Activity {
     private int index = 0;//탭별 인덱스 제어 변수
 
     //게임 내에서 사용될 변수들
-    private int age, weight, hungry, strength, effort, health, winrate;//상태창에서 사용될 변수들
-    private int mistake, overfeed, sleepdis, scarrate, poop;//게임 내부에서 동작할 변수들
+    private int age, weight, hungry, strength, effort, health, winrate, winnum, fightnum;//상태창에서 사용될 변수들
+    private int mistake, overfeed, sleepdis, scarrate, poop, pwr, heffort;//게임 내부에서 동작할 변수들
     private boolean cure;//상처입었는지 판단용 변수
 
     private int tmpHealth;//프로틴 4개 먹일 때마다 체력 1을 상승시키기 위한 임시 변수
@@ -66,11 +66,15 @@ public class FoodActivity extends Activity {
         effort = preferences.getInt("effort", 0);
         health = preferences.getInt("health", 0);
         winrate = preferences.getInt("winrate", 0);
+        winnum = preferences.getInt("winnum", 0);
+        fightnum = preferences.getInt("fightnum", 0);
         mistake = preferences.getInt("mistake", 0);
         overfeed = preferences.getInt("overfeed", 0);
         sleepdis = preferences.getInt("sleepdis", 0);
         scarrate = preferences.getInt("scarrate", 0);
         poop = preferences.getInt("poop", 0);
+        pwr = preferences.getInt("pwr", 10);
+        heffort = preferences.getInt("heffort", 0);
         cure = preferences.getBoolean("cure", false);
 
         tmpHealth = preferences.getInt("tmpHealth", 0);

@@ -13,6 +13,7 @@ public class MySoundPlayer {
     public static final int sound4 = R.raw.sound4;
     public static final int sound5 = R.raw.sound5;
     public static final int sound6 = R.raw.sound6;
+    public static final int sound7 = R.raw.sound7;
 
     private static SoundPool soundPool;
     private static HashMap<Integer, Integer> soundPoolMap;
@@ -27,13 +28,14 @@ public class MySoundPlayer {
                 .setAudioAttributes(attributes)
                 .build();
 
-        soundPoolMap = new HashMap(6);
+        soundPoolMap = new HashMap(7);
         soundPoolMap.put(sound1, soundPool.load(context, sound1, 1));
         soundPoolMap.put(sound2, soundPool.load(context, sound2, 2));
         soundPoolMap.put(sound3, soundPool.load(context, sound3, 3));
         soundPoolMap.put(sound4, soundPool.load(context, sound4, 4));
         soundPoolMap.put(sound5, soundPool.load(context, sound5, 5));
         soundPoolMap.put(sound6, soundPool.load(context, sound6, 6));
+        soundPoolMap.put(sound7, soundPool.load(context, sound7, 7));
     }
 
     public static void play(int raw_id) {
