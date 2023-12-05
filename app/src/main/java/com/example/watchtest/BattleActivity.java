@@ -1,17 +1,25 @@
 package com.example.watchtest;
 
+import android.Manifest;
 import android.app.Activity;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.watchtest.databinding.ActivityBattleBinding;
 
@@ -50,6 +58,13 @@ public class BattleActivity extends Activity {
     int winTimes = 0;
     int loseTimes = 0;
 
+    //블루투스 사용 용도
+    private BluetoothManager bluetoothManager;
+    //권한 요청 코드
+    private static final int MY_PERMISSIONS_REQUEST_BLUETOOTH_CONNECT = 1;
+    //블루투스 서버 기기 이름
+    private static final String SERVER_DEVICE_NAME = "VPetWatch";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,10 +72,54 @@ public class BattleActivity extends Activity {
         binding = ActivityBattleBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //블루투스 권한 확인
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
+                != PackageManager.PERMISSION_GRANTED) {
+            // 권한이 없는 경우 권한을 요청
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.BLUETOOTH_CONNECT},
+                    MY_PERMISSIONS_REQUEST_BLUETOOTH_CONNECT);
+        } else {
+            // 권한이 이미 부여된 경우 블루투스 기능 사용
+            // 여기에서 Bluetooth 기능을 초기화하고 사용할 수 있습니다.
+        }
+
+        //BluetoothManager 초기화
+        bluetoothManager = new BluetoothManager(this, handler);
+        //Bluetooth 지원 여부 확인
+        if (bluetoothManager == null) {
+            Toast.makeText(this, "Bluetooth를 지원하지 않습니다.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         initializeImageViews();
         initializeButton();
         initializePreferences();//SharedPreferences 초기화 메소드
         arrowChange(index);
+    }
+
+    private void connectToDevice(BluetoothDevice device) {
+        bluetoothManager.connectToDevice(device);
+    }
+
+    private final Handler uiHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case BluetoothManager.MESSAGE_RECEIVED:
+                    String receivedMessage = (String) msg.obj;
+                    // TODO: Handle the received message
+                    break;
+            }
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //액티비티가 사라질 때 블루투스 및 서버 소켓 종료
+        bluetoothManager.cancel();
     }
 
     //SharedPreferences 초기화 부분
@@ -222,6 +281,19 @@ public class BattleActivity extends Activity {
 
     private void pageTwo() {
         resetBattleViewsVisibility();
+
+        //Bluetooth 활성화 확인
+        bluetoothManager.enableBluetooth();
+        Log.d("bluetoothManager", "enableBluetooth");
+
+        //Bluetooth 서버 시작
+        bluetoothManager.startServer(SERVER_DEVICE_NAME);
+        Log.d("bluetoothManager", "startServer");
+
+        //Bluetooth 검색 및 시작
+        bluetoothManager.startDiscovery(SERVER_DEVICE_NAME);
+        Log.d("bluetoothManager", "startDiscovery : " + bluetoothManager.startDiscovery(SERVER_DEVICE_NAME));
+        ;
     }
 
     private int attackSuccessMotion(int delayTime) {

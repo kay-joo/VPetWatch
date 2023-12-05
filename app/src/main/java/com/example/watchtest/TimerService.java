@@ -22,7 +22,7 @@ public class TimerService extends android.app.Service {
     private static final String CHANNEL_ID = "timer_channel";
 
     private int age, weight, hungry, strength, effort, health, winrate;
-    private int mistake, overfeed, sleepdis, scarrate, poop;
+    private int mistake, overfeed, sleepdis, scarrate, poop, scarnum;//게임 내부에서 동작할 변수들
     private boolean cure;
 
     SharedPreferences preferences;
@@ -72,6 +72,10 @@ public class TimerService extends android.app.Service {
                     }
                 } else {
                     NotificationHelper.showNotification(getApplicationContext(), "VPetWatch", "Hungry decreased");
+                    //첫 호출 이외의 호출 시 상처횟수 카운트
+                    scarnum++;
+                    editor.putInt("scarnum", scarnum);
+                    editor.apply();
                 }
                 if (strength > 0) {
                     strength--;
@@ -81,6 +85,10 @@ public class TimerService extends android.app.Service {
                     }
                 } else {
                     NotificationHelper.showNotification(getApplicationContext(), "VPetWatch", "Strength decreased");
+                    //첫 호출 이외의 호출 시 상처횟수 카운트
+                    scarnum++;
+                    editor.putInt("scarnum", scarnum);
+                    editor.apply();
                 }
                 editor.apply();
                 handler.postDelayed(this, 1200000); // 20분 마다 실행
@@ -114,6 +122,7 @@ public class TimerService extends android.app.Service {
         sleepdis = preferences.getInt("sleepdis", 0);
         scarrate = preferences.getInt("scarrate", 0);
         poop = preferences.getInt("poop", 0);
+        scarnum = preferences.getInt("scarnum", 0);
         cure = preferences.getBoolean("cure", false);
     }
 

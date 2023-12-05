@@ -1,11 +1,13 @@
 package com.example.watchtest;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -66,6 +68,7 @@ public class MainActivity extends Activity {
         index = intent.getIntExtra("INT_VALUE_KEY", 0);//특정 탭에서 나왔을때 탭의 커서를 받아오기 위한 인텐트
 
         checkNotificationPermission();//알림 허용체크
+        checkLocationPermission();//위치 허용체크
 
         if (!ServiceUtils.isServiceRunning(this, TimerService.class)) {
             Log.d("MainActivity", "startService");
@@ -82,8 +85,20 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void checkLocationPermission() {
+        if (!isNotLocationPermissionGranted()) {
+            requestLocationPermission();
+        } else {
+            // 알림 권한이 이미 허용된 경우 실행할 코드
+        }
+    }
+
     private boolean isNotificationPermissionGranted() {
         return NotificationManagerCompat.from(this).areNotificationsEnabled();
+    }
+
+    private boolean isNotLocationPermissionGranted() {
+        return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void requestNotificationPermission() {
@@ -101,6 +116,27 @@ public class MainActivity extends Activity {
             public void onClick(DialogInterface dialog, int which) {
                 // 권한이 거부된 경우 실행할 코드
                 Toast.makeText(MainActivity.this, "알림 권한이 필요합니다. 앱을 종료합니다.", Toast.LENGTH_SHORT).show();
+                finish(); // 앱 종료
+            }
+        });
+        builder.show();
+    }
+
+    private void requestLocationPermission() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("위치 권한 필요");
+        builder.setMessage("위치 권한이 필요합니다. 설정으로 이동하여 권한을 허용해주세요.");
+        builder.setPositiveButton("설정으로 이동", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                openAppSettings();
+            }
+        });
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // 권한이 거부된 경우 실행할 코드
+                Toast.makeText(MainActivity.this, "위치 권한이 필요합니다. 앱을 종료합니다.", Toast.LENGTH_SHORT).show();
                 finish(); // 앱 종료
             }
         });
@@ -350,6 +386,28 @@ public class MainActivity extends Activity {
         isHandlerRunning = false;
         if (scarnum == 20) {
             digimon_dead.setVisibility(View.VISIBLE);
+
+            //죽었을 시 모든 정보 리셋
+            editor.putInt("age", 0);
+            editor.putInt("weight", 5);
+            editor.putInt("hungry", 0);
+            editor.putInt("strength", 0);
+            editor.putInt("effort", 0);
+            editor.putInt("health", 0);
+            editor.putInt("winrate", 0);
+            editor.putInt("winnum", 0);
+            editor.putInt("fightnum", 0);
+            editor.putInt("mistake", 0);
+            editor.putInt("overfeed", 0);
+            editor.putInt("sleepdis", 0);
+            editor.putInt("scarrate", 0);
+            editor.putInt("poop", 0);
+            editor.putInt("pwr", 10);
+            editor.putInt("heffort", 0);
+            editor.putInt("scarnum", 0);
+            editor.putBoolean("cure", false);
+            editor.apply();
+
         } else if (cure) {
             digimonStatusSick();
         } else {
