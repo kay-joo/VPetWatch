@@ -3,6 +3,9 @@ package com.example.watchtest;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,6 +27,8 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.example.watchtest.databinding.ActivityMainBinding;
 
+import java.util.Calendar;
+
 public class MainActivity extends Activity {
     private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 1001;
 
@@ -36,6 +41,7 @@ public class MainActivity extends Activity {
     private ImageView digimon0, digimonUpP1, digimonDownP2, digimonDownP3, digimonDownP4, digimonEmotionP4, digimonUpM1, digimonDownM2, digimonDownM3, digimonDownM4, digimonEmotionM4;
     private ImageView digimon_hate_emotion0, digimon_sick_emotion_down, digimon_sick_emotion_up, effect_sick_first, effect_sick_second;
     private ImageView digimon_cure_emotion_down, digimon_cure_emotion_up, effect_cure_first, effect_cure_second;
+    private ImageView digimon_sleep_down, digimon_sleep_up, effect_sleep_on_first, effect_sleep_on_second, effect_sleep_off, effect_sleep_off_first, effect_sleep_off_second;
     private ImageView digimon_dead;
     private ImageView uiBlackStatus, uiBlackFood, uiBlackTraining, uiBlackBattle, uiBlackPoop, uiBlackLight, uiBlackCure, uiBlackCall;
     private Button button1, button2, button3;
@@ -47,11 +53,13 @@ public class MainActivity extends Activity {
     //게임 내에서 사용될 변수들
     private int age, weight, hungry, strength, effort, health, winrate, winnum, fightnum;//상태창에서 사용될 변수들
     private int mistake, overfeed, sleepdis, scarrate, poop, pwr, heffort, scarnum;//게임 내부에서 동작할 변수들
-    private boolean cure;//상처입었는지 판단용 변수
+    private boolean cure, sleep, lightoff;//상처입었는지 판단용 변수, 잠자는지 아닌지 판단용 변수, 불을 껐는지 안껐는지 판단용 변수
 
     //SharedPreferences 데이터 저장 관련 선언
     SharedPreferences preferences;
     SharedPreferences.Editor editor;
+
+    private static final int JOB_ID = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +70,7 @@ public class MainActivity extends Activity {
         initializeButton();//버튼 초기화
         MySoundPlayer.initSounds(getApplicationContext());//사운드 플레이어 초기화
         resetUiViewsVisibility();//액티비티 시작과 동시에 검은색 ui 안보이게 설정
+        resetDigimonViewsVisibility();//액티비티 시작과 동시에 이미지뷰 초기화
         initializePreferences();//SharedPreferences 초기화 메소드
 
         Intent intent = getIntent();
@@ -75,6 +84,29 @@ public class MainActivity extends Activity {
             Intent serviceIntent = new Intent(this, TimerService.class);
             startService(serviceIntent);
         }
+
+        scheduleJob();
+        Log.d("MainActivity", String.valueOf(sleep));
+    }
+
+    private void scheduleJob() {
+        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+
+        // 특정 시간 설정
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 19);//오후7시
+        calendar.set(Calendar.MINUTE, 0);
+        long startTime = calendar.getTimeInMillis();
+
+        // JobInfo 생성
+        JobInfo jobInfo = new JobInfo.Builder(JOB_ID, new ComponentName(this, MyJobService.class))
+                .setRequiresCharging(false) // 충전 중에만 실행 여부
+                .setPersisted(true) // 재부팅 후에도 유지 여부
+                .setMinimumLatency(startTime) // 최소 지연 시간 설정
+                .build();
+
+        // Job 등록
+        jobScheduler.schedule(jobInfo);
     }
 
     private void checkNotificationPermission() {
@@ -182,6 +214,8 @@ public class MainActivity extends Activity {
         heffort = preferences.getInt("heffort", 0);
         scarnum = preferences.getInt("scarnum", 0);
         cure = preferences.getBoolean("cure", false);
+        sleep = preferences.getBoolean("sleep", false);
+        lightoff = preferences.getBoolean("lightoff", false);
     }
 
     //이미지뷰 초기화 부분
@@ -209,6 +243,14 @@ public class MainActivity extends Activity {
         digimon_cure_emotion_up = findViewById(R.id.digimon_cure_emotion_up);
         effect_cure_first = findViewById(R.id.effect_cure_first);
         effect_cure_second = findViewById(R.id.effect_cure_second);
+
+        digimon_sleep_down = findViewById(R.id.digimon_sleep_down);
+        digimon_sleep_up = findViewById(R.id.digimon_sleep_up);
+        effect_sleep_on_first = findViewById(R.id.effect_sleep_on_first);
+        effect_sleep_on_second = findViewById(R.id.effect_sleep_on_second);
+        effect_sleep_off = findViewById(R.id.effect_sleep_off);
+        effect_sleep_off_first = findViewById(R.id.effect_sleep_off_first);
+        effect_sleep_off_second = findViewById(R.id.effect_sleep_off_second);
 
         digimon_dead = findViewById(R.id.digimon_dead);
 
@@ -287,44 +329,71 @@ public class MainActivity extends Activity {
                 finish();//현재 액티비티 종료
                 break;
             case 2:
-                if (cure) {
+                if (lightoff) {
+                } else if (cure) {
                     digimonStatusHate();
                 } else {
                     intent = new Intent(MainActivity.this, FoodActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                    editor.putBoolean("sleep", false);
+                    editor.apply();
                     startActivity(intent);
                     finish();//현재 액티비티 종료
-
                 }
                 break;
             case 3:
-                if (cure) {
+                if (lightoff) {
+                } else if (cure) {
                     digimonStatusHate();
                 } else {
                     intent = new Intent(MainActivity.this, TrainingActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                    editor.putBoolean("sleep", false);
+                    editor.apply();
                     startActivity(intent);
                     finish();//현재 액티비티 종료
                 }
                 break;
             case 4:
-                if (health == 0 || cure) {
+                if (lightoff) {
+                } else if (health == 0 || cure) {
                     digimonStatusHate();
                 } else {
                     intent = new Intent(MainActivity.this, BattleActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);//액티비티 전환시 애니메이션 없애기
+                    editor.putBoolean("sleep", false);
+                    editor.apply();
                     startActivity(intent);
                     finish();//현재 액티비티 종료
                 }
                 break;
             case 5:
-                digimonStatusHate();
+                if (lightoff) {
+                } else {
+                    digimonStatusHate();
+                }
                 break;
             case 6:
-                digimonStatusHate();
+                if (sleep && (lightoff == false)) {
+                    lightoff = true;
+                    editor.putBoolean("lightoff", lightoff);
+                    editor.apply();
+                    stopDigimonStatusUpdates();
+                    startDigimonStatusUpdates();
+                } else if (lightoff) {
+                    lightoff = false;
+                    editor.putBoolean("lightoff", lightoff);
+                    editor.apply();
+                    stopDigimonStatusUpdates();
+                    startDigimonStatusUpdates();
+                } else {
+                    digimonStatusHate();
+                }
+
                 break;
             case 7:
-                if (cure) {
+                if (lightoff) {
+                } else if (cure) {
                     digimonStatusCure();
                 } else {
                     digimonStatusHate();
@@ -406,10 +475,17 @@ public class MainActivity extends Activity {
             editor.putInt("heffort", 0);
             editor.putInt("scarnum", 0);
             editor.putBoolean("cure", false);
+            editor.putBoolean("sleep", false);
+            editor.putBoolean("lightoff", false);
             editor.apply();
 
         } else if (cure) {
             digimonStatusSick();
+
+        } else if (lightoff) {
+            digimonSleepOff();
+        } else if (sleep) {
+            digimonSleepOn();
         } else {
 
             runDelayedAnimation(0, digimon0);
@@ -453,6 +529,56 @@ public class MainActivity extends Activity {
             runDelayedAnimation(18000, digimonDownM2);
             runDelayedAnimation(18500, digimonUpM1);
         }
+    }
+
+    //불을 끼고 잠든 모션
+    private void digimonSleepOff() {
+        runDelayedAnimation(0, effect_sleep_off, effect_sleep_off_first);
+        runDelayedAnimation(1000, effect_sleep_off, effect_sleep_off_second);
+        runDelayedAnimation(2000, effect_sleep_off, effect_sleep_off_first);
+        runDelayedAnimation(3000, effect_sleep_off, effect_sleep_off_second);
+        runDelayedAnimation(4000, effect_sleep_off, effect_sleep_off_first);
+        runDelayedAnimation(5000, effect_sleep_off, effect_sleep_off_second);
+        runDelayedAnimation(6000, effect_sleep_off, effect_sleep_off_first);
+        runDelayedAnimation(7000, effect_sleep_off, effect_sleep_off_second);
+        runDelayedAnimation(8000, effect_sleep_off, effect_sleep_off_first);
+        runDelayedAnimation(9000, effect_sleep_off, effect_sleep_off_second);
+        runDelayedAnimation(10000, effect_sleep_off, effect_sleep_off_first);
+        runDelayedAnimation(11000, effect_sleep_off, effect_sleep_off_second);
+        runDelayedAnimation(12000, effect_sleep_off, effect_sleep_off_first);
+        runDelayedAnimation(13000, effect_sleep_off, effect_sleep_off_second);
+        runDelayedAnimation(14000, effect_sleep_off, effect_sleep_off_first);
+        runDelayedAnimation(15000, effect_sleep_off, effect_sleep_off_second);
+        runDelayedAnimation(16000, effect_sleep_off, effect_sleep_off_first);
+        runDelayedAnimation(17000, effect_sleep_off, effect_sleep_off_second);
+        runDelayedAnimation(18000, effect_sleep_off, effect_sleep_off_first);
+        runDelayedAnimation(18500, effect_sleep_off, effect_sleep_off_second);
+
+
+    }
+
+    //불을 키고 잠든 모션
+    private void digimonSleepOn() {
+        runDelayedAnimation(0, digimon_sleep_down, effect_sleep_on_first);
+        runDelayedAnimation(1000, digimon_sleep_down, effect_sleep_on_second);
+        runDelayedAnimation(2000, digimon_sleep_up, effect_sleep_on_first);
+        runDelayedAnimation(3000, digimon_sleep_up, effect_sleep_on_second);
+        runDelayedAnimation(4000, digimon_sleep_down, effect_sleep_on_first);
+        runDelayedAnimation(5000, digimon_sleep_down, effect_sleep_on_second);
+        runDelayedAnimation(6000, digimon_sleep_up, effect_sleep_on_first);
+        runDelayedAnimation(7000, digimon_sleep_up, effect_sleep_on_second);
+        runDelayedAnimation(8000, digimon_sleep_down, effect_sleep_on_first);
+        runDelayedAnimation(9000, digimon_sleep_down, effect_sleep_on_second);
+        runDelayedAnimation(10000, digimon_sleep_up, effect_sleep_on_first);
+        runDelayedAnimation(11000, digimon_sleep_up, effect_sleep_on_second);
+        runDelayedAnimation(12000, digimon_sleep_down, effect_sleep_on_first);
+        runDelayedAnimation(13000, digimon_sleep_down, effect_sleep_on_second);
+        runDelayedAnimation(14000, digimon_sleep_up, effect_sleep_on_first);
+        runDelayedAnimation(15000, digimon_sleep_up, effect_sleep_on_second);
+        runDelayedAnimation(16000, digimon_sleep_down, effect_sleep_on_first);
+        runDelayedAnimation(17000, digimon_sleep_down, effect_sleep_on_second);
+        runDelayedAnimation(18000, digimon_sleep_up, effect_sleep_on_first);
+        runDelayedAnimation(18500, digimon_sleep_up, effect_sleep_on_second);
     }
 
     private void digimonStatusHate() {
@@ -619,6 +745,13 @@ public class MainActivity extends Activity {
         effect_cure_first.setVisibility(View.INVISIBLE);
         effect_cure_second.setVisibility(View.INVISIBLE);
         digimon_dead.setVisibility(View.INVISIBLE);
+        digimon_sleep_down.setVisibility(View.INVISIBLE);
+        digimon_sleep_up.setVisibility(View.INVISIBLE);
+        effect_sleep_on_first.setVisibility(View.INVISIBLE);
+        effect_sleep_on_second.setVisibility(View.INVISIBLE);
+        effect_sleep_off.setVisibility(View.INVISIBLE);
+        effect_sleep_off_first.setVisibility(View.INVISIBLE);
+        effect_sleep_off_second.setVisibility(View.INVISIBLE);
     }
 
     private void resetUiViewsVisibility() {
